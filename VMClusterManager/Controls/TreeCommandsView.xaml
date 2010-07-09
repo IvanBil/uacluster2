@@ -1,0 +1,25 @@
+﻿<UserControl x:Class="VMClusterManager.Controls.TreeCommandsView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    >
+    <Grid>
+        <StackPanel>
+            <TextBlock>
+                <Hyperlink Command="{Binding RenameTreeNode}" CommandParameter="{Binding SelectedItem}" >
+                    <TextBlock Text="Rename"></TextBlock>
+                </Hyperlink>
+            </TextBlock>
+            <TextBlock>
+                <Hyperlink Command="{Binding VMGroupCreate}" CommandParameter="{Binding ActiveVMGroup}">
+                    <TextBlock Text="Create new group"></TextBlock>
+                </Hyperlink>
+            </TextBlock>
+            <TextBlock>
+                <Hyperlink Command="{Binding VMGroupRemove}" CommandParameter="{Binding ActiveVMGroup}">
+                    <TextBlock Text="Remove Group"></TextBlock>
+                </Hyperlink>
+            </TextBlock>
+        </StackPanel>
+          
+    </Grid>
+</UserControl>

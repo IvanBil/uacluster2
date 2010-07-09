@@ -1,0 +1,56 @@
+﻿<UserControl x:Class="VMClusterManager.VMDetailsView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    >
+    <DockPanel>
+        <!--Snapshots tree container-->
+        <Expander DockPanel.Dock="Bottom" BorderBrush="Black" BorderThickness="1">
+            <HeaderedContentControl Header="Snapshots">
+                <!--Snapshots Tree-->
+                <TreeView ItemsSource="{Binding VMSnapshots}">
+                    <TreeView.ItemContainerStyle>
+                        <Style TargetType="{x:Type TreeViewItem}">
+                            <Setter Property="FontWeight" Value="Normal" />
+                            <Setter Property="IsExpanded" Value="True"/>
+                            <Setter Property="IsSelected" Value="{Binding IsSelected, Mode=OneWayToSource}"/>
+                            <Style.Triggers>
+                                <DataTrigger  Binding="{Binding IsLastApplied}" Value="True">
+                                    <Setter Property="FontWeight" Value="Bold" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </TreeView.ItemContainerStyle>
+                    <TreeView.ItemTemplate>
+                        <HierarchicalDataTemplate ItemsSource="{Binding Children, Mode=OneWay}">
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="{Binding ElementName}"/>
+                            </StackPanel>
+                        </HierarchicalDataTemplate>
+                    </TreeView.ItemTemplate>
+                </TreeView>
+            </HeaderedContentControl>
+        </Expander>
+        <Border BorderBrush="Blue" BorderThickness="1"></Border>
+        <Grid DockPanel.Dock="Top">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="112*" />
+                <ColumnDefinition Width="186*" />
+            </Grid.ColumnDefinitions>
+            <StackPanel Grid.Column="1" Margin="10">
+                <TextBlock>
+                    <TextBlock.Text>
+                        <Binding Path="VMName" />
+                    </TextBlock.Text>
+                </TextBlock>
+                <TextBlock>
+                    <TextBlock.Text>
+                        <Binding Path="VMStatusString" Mode="OneWay" />
+                    </TextBlock.Text>
+                </TextBlock>
+            </StackPanel>
+
+            <Image Grid.Column="0" Name="ThumbnailImage"  VerticalAlignment="Top" Source="{Binding ThumbnailImage}" Margin="10">
+            </Image>
+        </Grid>
+    </DockPanel>
+</UserControl>

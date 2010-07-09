@@ -1,0 +1,18 @@
+﻿VMClusterManager
+
+
+winexe
+C#
+.cs
+C:\Users\administrator.MSCLUSTER.000\Documents\Visual Studio 2008\Projects\VMClusterManager\VMClusterManager\obj\x64\Debug\
+VMClusterManager
+none
+false
+DEBUG;TRACE
+C:\Users\administrator.MSCLUSTER.000\Documents\Visual Studio 2008\Projects\VMClusterManager\VMClusterManager\App.xaml
+71642063875
+
+431384627703
+14355842741
+Controls\VMHostViews\VMHostTreeView.xaml;Controls\VMViews\VMTreeView.xaml;Controls\DetailViewBase.xaml;Controls\VMViews\VMCommandsView.xaml;Controls\VMViews\VMDetailsView.xaml;Controls\VMViews\VMListView.xaml;Window1.xaml;
+

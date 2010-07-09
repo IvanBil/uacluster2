@@ -1,0 +1,28 @@
+﻿<Application x:Class="VMClusterManager.App"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    StartupUri="Window1.xaml">
+    <Application.Resources>
+        <ImageSource x:Key="ErrorIcon">Resources\Images\Error.png</ImageSource>
+        <ImageSource x:Key="WarningIcon">Resources\Images\Warning.png</ImageSource>
+        <Style TargetType="{x:Type TextBlock}">
+            <Setter Property="FontSize" Value="14"/>
+        </Style>
+        <Style TargetType="{x:Type TextBox}">
+            <Setter Property="FontSize" Value="14"/>
+        </Style>
+        <Style TargetType="{x:Type PasswordBox}">
+            <Setter Property="FontSize" Value="14"/>
+        </Style>
+        
+        <Style TargetType="{x:Type Label}">
+            <Setter Property="FontSize" Value="14"/>
+        </Style>
+        
+        <Style TargetType="{x:Type Button}">
+            <Setter Property="Height" Value="25"/>
+            <Setter Property="Width" Value="50"/> 
+        </Style>
+        
+    </Application.Resources>
+</Application>

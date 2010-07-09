@@ -1,0 +1,36 @@
+﻿<Window x:Class="VMClusterManager.Windows.AboutWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    Title="About" Name="wndAbout" Width="350" 
+        MaxWidth="{Binding ElementName=wndAbout, Path=Width}"
+        MinWidth="{Binding ElementName=wndAbout, Path=Width}"
+        MaxHeight="{Binding ElementName=wndAbout, Path=Height}"
+        MinHeight="{Binding ElementName=wndAbout, Path=MaxHeight}"
+        SizeToContent="Height" WindowStyle="ToolWindow">
+    <Grid>
+        <StackPanel>
+            <RichTextBox Name="rtbAbout" IsReadOnly="True" IsDocumentEnabled="True" BorderThickness="0">
+                <FlowDocument >
+                    <Paragraph>
+                        <Run>High performance computing cluster manager for  Microsort Hyper-V virtual machine nodes.</Run>
+                    </Paragraph>
+                    <Paragraph>
+                        <Run>Project web-site:</Run>
+                        <Hyperlink Name="OffSite" NavigateUri="http://uacluster2.codeplex.com" Click="OffSite_Click" >
+                            <TextBlock Text="http://uacluster2.codeplex.com" />
+
+                        </Hyperlink>
+
+                    </Paragraph>
+                    <Paragraph>
+                        <Run>Developed by Ivan Bilocon.</Run>
+                    </Paragraph>
+
+                </FlowDocument>
+            </RichTextBox>
+            <Button HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="5,5,5,5" Click="Button_Click">
+                OK
+            </Button>
+        </StackPanel>
+    </Grid>
+</Window>
