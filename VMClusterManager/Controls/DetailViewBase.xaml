@@ -1,0 +1,20 @@
+﻿<!--This control is a base for Tree Elements Presentation -->
+
+<UserControl 
+    x:Class="VMClusterManager.Controls.DetailViewBase"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="clr-namespace:VMClusterManager"         
+    >
+        <Grid>
+            <Grid.Resources>
+                <!--<local:Converter x:Key="conv"></local:Converter>-->
+            </Grid.Resources>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+            <ContentControl Name="detailContent" />
+            <!--<ContentControl Content="{Binding Converter={StaticResource conv}}">
+        </ContentControl>-->
+        </Grid>
+</UserControl>

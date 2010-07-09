@@ -1,0 +1,14 @@
+﻿<UserControl x:Class="VMClusterManager.Controls.JobViews.JobCommandsView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+ >
+    <Grid>
+        <StackPanel MinWidth="120">
+            <TextBlock>
+                <Hyperlink Command="{Binding VMListStart}" CommandParameter="{Binding ActiveVMList}">
+                    <TextBlock Text="Cancel Job"></TextBlock>
+                </Hyperlink>
+            </TextBlock>
+        </StackPanel>
+    </Grid>
+</UserControl>
