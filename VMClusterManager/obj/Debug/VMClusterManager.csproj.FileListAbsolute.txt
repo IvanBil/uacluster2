@@ -241,3 +241,10 @@ D:\C#Projects\VMClusterManager\VMClusterManager\obj\Debug\Windows\AboutWindow.g.
 D:\C#Projects\VMClusterManager\VMClusterManager\bin\Debug\Interop.IWshRuntimeLibrary.dll
 D:\C#Projects\VMClusterManager\VMClusterManager\obj\Debug\Interop.IWshRuntimeLibrary.dll
 D:\C#Projects\VMClusterManager\VMClusterManager\obj\Debug\VMClusterManager.csproj.ResolveComReference.cache
+C:\deimos\VMClusterManager\VMClusterManager\obj\Debug\Interop.IWshRuntimeLibrary.dll
+C:\deimos\VMClusterManager\VMClusterManager\obj\Debug\VMClusterManager.csproj.ResolveComReference.cache
+C:\deimos\VMClusterManager\VMClusterManager\bin\Debug\Interop.IWshRuntimeLibrary.dll
+C:\deimos\VMClusterManager\VMClusterManager\obj\Debug\Controls\JobViews\JobCommandsView.baml
+C:\deimos\VMClusterManager\VMClusterManager\obj\Debug\Windows\AboutWindow.baml
+C:\deimos\VMClusterManager\VMClusterManager\obj\Debug\Controls\JobViews\JobCommandsView.g.cs
+C:\deimos\VMClusterManager\VMClusterManager\obj\Debug\Windows\AboutWindow.g.cs

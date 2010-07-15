@@ -48,7 +48,7 @@ namespace ShortcutsDemoApp
 		}
 
 
-		private string ShortcutName
+		private string ExecutiveShortcutName
 		{
 			get
 			{
@@ -70,6 +70,14 @@ namespace ShortcutsDemoApp
 			}
 		}
 
+        private string HostlistShortcutName
+        {
+            get
+            {
+                return "Hostlist";
+            }
+        }
+
 
 		private string ShortcutDescription
 		{
@@ -87,7 +95,7 @@ namespace ShortcutsDemoApp
 					catch {}
 
 					if ((_description == null) || (_description.Trim() == string.Empty))
-						_description = "Launch " + ShortcutName;
+						_description = "Launch " + ExecutiveShortcutName;
 				}
 				return _description;
 			}
@@ -159,12 +167,12 @@ namespace ShortcutsDemoApp
 				if (desktopFolder == null)
 					desktopFolder = Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory);
 
-				CreateShortcut(desktopFolder, ShortcutName, ShortcutTarget, ShortcutDescription);
+				CreateShortcut(desktopFolder, ExecutiveShortcutName, ShortcutTarget, ShortcutDescription);
 			}
 
 			if (installQuickLaunchShortcut)
 			{
-				CreateShortcut(QuickLaunchFolder, ShortcutName, ShortcutTarget, ShortcutDescription);
+				CreateShortcut(QuickLaunchFolder, ExecutiveShortcutName, ShortcutTarget, ShortcutDescription);
 			}
 
             string startMenu = null;
@@ -184,7 +192,12 @@ namespace ShortcutsDemoApp
             if (installStartMenuGroup)
             {
 
-                CreateShortcut(startMenu + "\\" + StartMenuFolderName, ShortcutName, ShortcutTarget, ShortcutDescription);
+                CreateShortcut(startMenu + "\\" + StartMenuFolderName, ExecutiveShortcutName, ShortcutTarget, ShortcutDescription);
+                //install shortcut to hostlist.txt
+                CreateShortcut(startMenu + "\\" + StartMenuFolderName, HostlistShortcutName,
+                    Path.GetDirectoryName(ShortcutTarget) + "\\Hostlist.txt",
+                    "Open host list setup file for editing");
+                
             }
 		}
 
@@ -252,11 +265,11 @@ namespace ShortcutsDemoApp
 				object allUsersDesktop = "AllUsersDesktop";
 				WshShell shell = new WshShellClass();
 				string desktopFolder = shell.SpecialFolders.Item(ref allUsersDesktop).ToString();
-				DeleteShortcut(desktopFolder, ShortcutName);
+				DeleteShortcut(desktopFolder, ExecutiveShortcutName);
 			}
 			catch {}
 
-			DeleteShortcut(Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory), ShortcutName);
+			DeleteShortcut(Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory), ExecutiveShortcutName);
 
             string startMenu = null;
             try
@@ -272,21 +285,20 @@ namespace ShortcutsDemoApp
                 startMenu = Environment.GetFolderPath(Environment.SpecialFolder.Programs);
             }
             startMenu += "\\" + StartMenuFolderName;
-            DeleteShortcut(startMenu, ShortcutName);
+            DeleteShortcut(startMenu, ExecutiveShortcutName);
+            DeleteShortcut(startMenu, HostlistShortcutName);
             ///Delete directory from start menu
             //DeleteShortcut(StartMenuFolderName, ShortcutName);
-            if (Directory.Exists(startMenu))
+            try
             {
-                try
-                {
-                    Directory.Delete(startMenu);
-                }
-                catch (Exception ex)
-                {
-                }
+                Directory.Delete(startMenu);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
             }
 
-			DeleteShortcut(QuickLaunchFolder, ShortcutName);
+			DeleteShortcut(QuickLaunchFolder, ExecutiveShortcutName);
 		}
 
 	
