@@ -201,23 +201,24 @@ namespace VMClusterManager
                 rootVMHostGroup = new VMHostGroup("All hosts");
                 VMGroup.Storage = "VMTree.xml";
                 //retrieve VM Tree structure
-                if (File.Exists("VMTree.xml"))
+                if (!File.Exists("VMTree.xml"))
                 {
-                    try
+                    VMGroup temp = new VMGroup("All VM");
+                    temp.SaveToXML(VMGroup.Storage.ToString());
+
+                }
+                try
                     {
                         VMTreeStructure = XElement.Load("VMTree.xml");
                         rootVMGroup = new VMGroup(VMTreeStructure);
                     }
-                    catch (Exception ex)
+                catch (Exception ex)
                     {
-                        MessageBox.Show(ex.Message, "VMModel()", MessageBoxButton.OK, MessageBoxImage.Error);
+                        MessageBox.Show(ex.Message, "Error loading VM group structure", MessageBoxButton.OK, MessageBoxImage.Error);
                         rootVMGroup = new VMGroup("All VM");
                     }
-                }
-                else
-                {
-                    rootVMGroup = new VMGroup("All VM");
-                }
+                    
+               
                 ////---------------------------
                 VMHostGroupEventSubscriber(rootVMHostGroup);
                 List<VMHost> hostList = DR.GetHostListFromFile("hostlist.txt");

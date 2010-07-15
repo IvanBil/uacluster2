@@ -202,17 +202,14 @@ namespace VMClusterManager
         public void SaveToXML(string FilePath)
         {
             //find root element
-            Group root = this;
+            VMGroup root = this;
             while (root.ParentGroup != null)
             {
-                root = root.ParentGroup;
+                root = root.ParentGroup as VMGroup;
             }
-            if (root.DataObject is XElement)
-            {
-                StreamWriter SW = File.CreateText(FilePath);
-                SW.Write(root.DataObject.ToString());
-                SW.Close();
-            }
+            StreamWriter SW = File.CreateText(FilePath);
+            SW.Write(root.GetXElement(root).ToString());
+            SW.Close();
         }
 
         public override void Save()
