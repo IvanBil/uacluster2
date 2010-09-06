@@ -5,7 +5,7 @@ namespace VMClusterManager.ViewModels.VMModels
 {
     public class VMSnapshotViewModel : ViewModelBase
     {
-        private IVMModel model;
+        private VMModel model;
         private VMSnapshot snapshotInstance;
 
 
@@ -52,7 +52,7 @@ namespace VMClusterManager.ViewModels.VMModels
             get { return children; }
         } 
 
-        public VMSnapshotViewModel(VMSnapshot _snapshot, VM vm, IVMModel _model)
+        public VMSnapshotViewModel(VMSnapshot _snapshot, VM vm, VMModel _model)
             : base()
         {
             this.model = _model;

@@ -12,6 +12,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using VMClusterManager.ViewModels;
+using VMClusterManager.ViewModels.VMModels;
 
 namespace VMClusterManager.Controls
 {
@@ -28,6 +29,10 @@ namespace VMClusterManager.Controls
 
         void VMListView_Unloaded(object sender, RoutedEventArgs e)
         {
+            foreach (VMViewModel model in dgVMList.Items)
+            {
+                model.Dispose();
+            }
             if (this.DataContext != null)
             {
                 if (this.DataContext is ViewModelBase)
@@ -45,5 +50,13 @@ namespace VMClusterManager.Controls
         }
 
         #endregion
+
+        private void dgVMList_UnloadingRow(object sender, Microsoft.Windows.Controls.DataGridRowEventArgs e)
+        {
+            if (e.Row.DataContext != null)
+            {
+                (e.Row.DataContext as VMViewModel).Dispose();
+            }
+        }
     }
 }

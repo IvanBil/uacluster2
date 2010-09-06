@@ -21,10 +21,11 @@ namespace VMClusterManager
     /// </summary>
     public partial class VMTreeView : UserControl, IView
     {
-        private EditableTextBlock activeTB;
+        //private EditableTextBlock activeTB;
         public VMTreeView()
         {
             InitializeComponent();
+            //SetViewModel(new VMTreeViewModel(VMModel.GetInstance()));
         }
 
         #region IView Members
@@ -32,7 +33,10 @@ namespace VMClusterManager
         public void SetViewModel(object ViewModel)
         {
             this.DataContext = ViewModel;
+            //(DataContext as VMTreeViewModel).RenameActiveTreeNodeRequested += new EventHandler<EventArgs>(VMTreeView_RenameActiveTreeNodeRequested);
         }
+
+       
 
         #endregion
 
@@ -41,149 +45,97 @@ namespace VMClusterManager
 
         //}
 
-        private void treeElements_SelectedItemChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
-        {
 
-            object selectedItem = e.NewValue;
-            
-            VMTreeViewModel treeViewModel = (this.DataContext as VMTreeViewModel);
-            if (selectedItem is VMGroup)
-            {
-                treeViewModel.ActiveVMGroup = selectedItem as VMGroup;
-            }
-            else
-            {
-                ////Get Parent Group of VM
-                //TreeViewItem item = e.OriginalSource as TreeViewItem;
-                //if (item != null)
-                //{
-                //    ItemsControl parent = ItemsControl.ItemsControlFromItemContainer(item);
-                //    if (parent != null)
-                //    {
-                //        treeViewModel.ActiveVMGroup = parent.DataContext as VMGroup;
-                //    }
-                //}
-                treeViewModel.ActiveVMGroup = null;
-            }
-            treeViewModel.SelectedItem = selectedItem;
-        }
+       
 
-        private void treeElements_PreviewKeyDown(object sender, KeyEventArgs e)
-        {
-            if (e.Key == Key.F2)
-            {
-                if (activeTB != null)
-                {
-                    if (activeTB.IsEditable)
-                    {
-                        activeTB.IsInEditMode = true;
-                    }
-                }
-            }
-            if (e.Key == Key.Enter)
-            {
-                if (activeTB.IsInEditMode)
-                {
-                    BindingExpression bindExp = activeTB.GetBindingExpression(EditableTextBlock.TextProperty);
-                    bindExp.UpdateSource();
-                }
-            }
-        }
+       
 
-        public void RenameActiveTreeNode()
-        {
-            if (activeTB != null)
-            {
-                if (activeTB.IsEditable)
-                {
-                    activeTB.IsInEditMode = true;
-                }
-            }
-        }
+        //public void SetSelectedItem(ref TreeView control, object item)
+        //{
+        //    try
+        //    {
+        //        DependencyObject dObject = control
+        //            .ItemContainerGenerator
+        //            .ContainerFromItem(item);
 
-        private void EditableTextBlock_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
-        {
-            activeTB = e.Source as EditableTextBlock;
-        }
+        //        //uncomment the following line if UI updates are unnecessary
+        //        ((TreeViewItem)dObject).IsSelected = true;               
 
-        public void SetSelectedItem(ref TreeView control, object item)
-        {
-            try
-            {
-                DependencyObject dObject = control
-                    .ItemContainerGenerator
-                    .ContainerFromItem(item);
+        //        MethodInfo selectMethod =
+        //           typeof(TreeViewItem).GetMethod("Select",
+        //           BindingFlags.NonPublic | BindingFlags.Instance);
 
-                //uncomment the following line if UI updates are unnecessary
-                ((TreeViewItem)dObject).IsSelected = true;               
+        //        selectMethod.Invoke(dObject, new object[] { true });
+        //    }
+        //    catch { }
+        //}
 
-                MethodInfo selectMethod =
-                   typeof(TreeViewItem).GetMethod("Select",
-                   BindingFlags.NonPublic | BindingFlags.Instance);
+        //private bool SetSelected(ItemsControl parent, object child)
+        //{
+        //    if (parent == null || child == null)
+        //    {
+        //        return false;
+        //    }
 
-                selectMethod.Invoke(dObject, new object[] { true });
-            }
-            catch { }
-        }
+        //    TreeViewItem childNode = parent.ItemContainerGenerator.ContainerFromItem(child) as TreeViewItem;
+        //    if (childNode != null)
+        //    {
+        //        //(parent as TreeViewItem).IsExpanded = true;
+        //        childNode.Focus();
+        //        //if (childNode is EditableTextBlock)
+        //        //{
+        //        //    activeTB = childNode.Item as EditableTextBlock;
+        //        //}
+        //        return childNode.IsSelected = true;
+        //    }
 
-        private bool SetSelected(ItemsControl parent, object child)
-        {
-            if (parent == null || child == null)
-            {
-                return false;
-            }
+        //    if (parent.Items.Count > 0)
+        //    {
+        //        foreach (object childItem in parent.Items)
+        //        {
+        //            ItemsControl childControl = parent.ItemContainerGenerator.ContainerFromItem(childItem) as ItemsControl;
 
-            TreeViewItem childNode = parent.ItemContainerGenerator.ContainerFromItem(child) as TreeViewItem;
+        //            if (SetSelected(childControl, child))
+        //            {
+        //                return true;
+        //            }
+        //        }
+        //    }
 
-            if (childNode != null)
-            {
-                //(parent as TreeViewItem).IsExpanded = true;
-                childNode.Focus();
-                //if (childNode is EditableTextBlock)
-                //{
-                //    activeTB = childNode.Item as EditableTextBlock;
-                //}
-                return childNode.IsSelected = true;
-            }
+        //    return false;
+        //}
 
-            if (parent.Items.Count > 0)
-            {
-                foreach (object childItem in parent.Items)
-                {
-                    ItemsControl childControl = parent.ItemContainerGenerator.ContainerFromItem(childItem) as ItemsControl;
-
-                    if (SetSelected(childControl, child))
-                    {
-                        return true;
-                    }
-                }
-            }
-
-            return false;
-        }
-
-        public void NavigateTo(object node)
-        {
-            SetSelectedItem(ref treeElements, node);
-            //return SetSelected(treeElements, node);
-        }
+        //public void NavigateTo(object node)
+        //{
+        //    SetSelectedItem(ref treeElements, node);
+        //    //return SetSelected(treeElements, node);
+        //}
 
         private void EditableTextBlock_SourceUpdated(object sender, DataTransferEventArgs e)
         {
-            object Node = activeTB.DataContext;
-            //object target = e.TargetObject;
-            if (Node != null)
+            try
             {
-                if (Node is Group)
+                EditableTextBlock activeTB = sender as EditableTextBlock;
+                object Node = activeTB.DataContext;
+                if (Node != null)
                 {
-                    (Node as Group).Save();
+                    if (Node is Group)
+                    {
+                        (Node as Group).Save();
+                    }
                 }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "EditableTextBlock_SourceUpdated", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
-        private void EditableTextBlock_GotFocus(object sender, RoutedEventArgs e)
+        
+
+        private void treeElements_SelectedItemChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
         {
-            activeTB = e.Source as EditableTextBlock;
+            (DataContext as VMTreeViewModel).SelectedItem = e.NewValue;
         }
     }
 }

@@ -3,51 +3,79 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:my="clr-namespace:Microsoft.Windows.Controls;assembly=WPFToolkit"
     xmlns:local="clr-namespase:VMClusterManager;assembly=VMClusterManager"
+             xmlns:converters="clr-namespace:VMClusterManager.Converters"
 >
     <UserControl.Resources >
         <Style x:Key="DataGridCheckBoxStyle" TargetType="CheckBox" BasedOn="{StaticResource {x:Type CheckBox}}">
             <Setter Property="VerticalAlignment" Value="Center" />
             <Setter Property="Margin" Value="8,0,3,0" />
         </Style>
+
+        <converters:JobToTaskListConverter x:Key="JobToTaskList"/>
+        <DataTemplate x:Key="RowDetailsTemplate">
+            <!--<ContentControl Content="{Binding TaskListView}"/>-->
+            <TabControl Margin="5,5,5,5">
+                <TabItem Header="Tasks">
+                    <my:DataGrid ScrollViewer.VerticalScrollBarVisibility="Visible" AutoGenerateColumns="False" 
+                         Name="dgTaskList" 
+                         DataContext="{Binding ElementName=dgJobList, Path=SelectedValue, Converter={StaticResource JobToTaskList}, Mode=OneWay}"
+                         UnloadingRow="dgTaskList_UnloadingRow"
+                         ItemsSource="{Binding TaskList}" 
+                                 HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                        <my:DataGrid.Columns>
+                            <my:DataGridTemplateColumn MinWidth="10" Width="Auto" SortMemberPath="Include">
+                            <my:DataGridTemplateColumn.Header>
+                                <Menu>
+                                    <MenuItem Header="Check">
+                                        <MenuItem Header="All" Command="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type my:DataGrid}}, 
+                                        Path=DataContext.SelectAllCommand, Mode=OneWay}"
+                                        CommandParameter="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type my:DataGrid}}, 
+                                        Path=DataContext.TaskList}"
+                                              />
+                                        <MenuItem Header="None" Command="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type my:DataGrid}}, 
+                                        Path=DataContext.UnselectAllCommand, Mode=OneWay}"
+                                        CommandParameter="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type my:DataGrid}}, 
+                                        Path=DataContext.TaskList}"/>
+                                    </MenuItem>
+                                </Menu>
+
+                            </my:DataGridTemplateColumn.Header>
+                            <my:DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <CheckBox Style="{StaticResource DataGridCheckBoxStyle}" HorizontalAlignment="Center" 
+                                           IsChecked="{Binding IsActive}" />
+                                </DataTemplate>
+                            </my:DataGridTemplateColumn.CellTemplate>
+                            </my:DataGridTemplateColumn>
+                            <my:DataGridTextColumn Header="Task ID" Binding="{Binding TaskID}"/>
+                            <my:DataGridTextColumn Header="Name" Binding="{Binding Name}"/>
+                            <my:DataGridTextColumn Header="State" Binding="{Binding State}"/>
+                            <my:DataGridTextColumn Header="Command line" Binding="{Binding CommandLine}"/>
+                            <my:DataGridTextColumn Header="Requested resources" Binding="{Binding RequestedResources}"/>
+                            <my:DataGridTextColumn Header="Started" Binding="{Binding StartTime}"/>
+                            <my:DataGridTextColumn Header="Ended" Binding="{Binding EndTime}"/>
+                        </my:DataGrid.Columns>
+                        
+                        <my:DataGrid.ItemContainerStyle>
+                            <Style TargetType="{x:Type my:DataGridRow}">
+                                <Setter Property="IsSelected" Value="{Binding IsSelected, Mode= TwoWay}"/>
+                            </Style>
+                        </my:DataGrid.ItemContainerStyle>
+                    </my:DataGrid>
+                </TabItem>
+            </TabControl>
+            
+        </DataTemplate>
     </UserControl.Resources>
     <DockPanel>
-        <Expander DockPanel.Dock="Bottom" BorderBrush="Black" BorderThickness="1">
-            <TextBlock Text="Properties"></TextBlock>
-        </Expander>
-        <!--<Expander Name="expVMLog" DockPanel.Dock="Bottom" BorderBrush="Black" BorderThickness="1" Header="Log">
-            <my:DataGrid ItemsSource="{Binding Log, Mode=OneWay}" AutoGenerateColumns="False">
-                <my:DataGrid.Columns>
-                    <my:DataGridTemplateColumn>
-                        <my:DataGridTemplateColumn.CellTemplate>
-                            <DataTemplate>
-                                <Image Name="messageTypeIcon" Height="16" HorizontalAlignment="Center" VerticalAlignment="Top">
-
-                                </Image>
-                                <DataTemplate.Triggers>
-                                    <DataTrigger Binding="{Binding MessageType}" Value="0">
-                                        <Setter TargetName="messageTypeIcon" Property="Source" Value="{StaticResource ErrorIcon}"/>
-                                        
-                                    </DataTrigger>
-                                    <DataTrigger Binding="{Binding MessageType}" Value="1">
-                                        <Setter TargetName="messageTypeIcon" Property="Source" Value="{StaticResource WarningIcon}"/>
-                                    </DataTrigger>
-                                </DataTemplate.Triggers>
-                            </DataTemplate>
-                        </my:DataGridTemplateColumn.CellTemplate>
-                    </my:DataGridTemplateColumn>
-                    <my:DataGridTextColumn Header="Source" Binding="{Binding Source, Mode=OneWay}"/>
-                    <my:DataGridTextColumn Header="Message" Binding="{Binding Message, Mode=OneWay}"/>
-                    <my:DataGridTextColumn Header="Action" Binding="{Binding Action}"/>
-                    <my:DataGridTextColumn Header="Time" Binding="{Binding Time, Mode=OneWay}"/>
-
-                </my:DataGrid.Columns>
-            </my:DataGrid>
-
-        </Expander>-->
-
         <Grid>
-            <my:DataGrid ScrollViewer.VerticalScrollBarVisibility="Visible" AutoGenerateColumns="True" 
-                         Name="dgJobList" ItemsSource="{Binding JobList, Mode=OneWay}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                       
+            <my:DataGrid Grid.Row="1" 
+                ScrollViewer.VerticalScrollBarVisibility="Visible" AutoGenerateColumns="False" 
+                         Name="dgJobList" 
+                         RowDetailsTemplate="{StaticResource RowDetailsTemplate}" RowDetailsVisibilityMode="VisibleWhenSelected"
+                         ItemsSource="{Binding JobList, Mode=OneWay}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                
                 <my:DataGrid.Columns>
                     <my:DataGridTemplateColumn MinWidth="10" Width="Auto" SortMemberPath="Include">
                         <my:DataGridTemplateColumn.Header>
@@ -56,12 +84,12 @@
                                     <MenuItem Header="All" Command="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type my:DataGrid}}, 
                                         Path=DataContext.SelectAllCommand, Mode=OneWay}"
                                         CommandParameter="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type my:DataGrid}}, 
-                                        Path=DataContext.VMList}"
+                                        Path=DataContext.JobList}"
                                               />
                                     <MenuItem Header="None" Command="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type my:DataGrid}}, 
                                         Path=DataContext.UnselectAllCommand, Mode=OneWay}"
                                         CommandParameter="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type my:DataGrid}}, 
-                                        Path=DataContext.VMList}"/>
+                                        Path=DataContext.JobList}"/>
                                 </MenuItem>
                             </Menu>
                             
@@ -69,10 +97,17 @@
                         <my:DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
                                 <CheckBox Style="{StaticResource DataGridCheckBoxStyle}" HorizontalAlignment="Center" 
-                                           IsChecked="{Binding IsActiveVM}" />
+                                           IsChecked="{Binding IsActive}" />
                             </DataTemplate>
                         </my:DataGridTemplateColumn.CellTemplate>
                     </my:DataGridTemplateColumn>
+                    <my:DataGridTextColumn Header="Name" Binding="{Binding Name}"/>
+                    <my:DataGridTextColumn Header="Job ID" Binding="{Binding JobID}"/>
+                    <my:DataGridTextColumn Header="State" Binding="{Binding State}"/>
+                    <my:DataGridTextColumn Header="Owner" Binding="{Binding Owner}"/>
+                    <my:DataGridTextColumn Header="Created" Binding="{Binding CreateTime}"/>
+                    <my:DataGridTextColumn Header="Started" Binding="{Binding StartTime}"/>
+                    <my:DataGridTextColumn Header="Ended" Binding="{Binding EndTime}"/>
                     <!--<my:DataGridTextColumn 
                     Header="VM"
                     Binding="{Binding VMName}"

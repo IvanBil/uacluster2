@@ -5,12 +5,15 @@ using VMClusterManager.ViewModels.VMModels;
 using System.Threading;
 using System.Collections.ObjectModel;
 using Microsoft.Practices.Composite.Wpf.Commands;
+using System.Windows;
+using VMClusterManager.Controls.JobViews;
+using VMClusterManager.ViewModels.HpcModels;
 
 namespace VMClusterManager.ViewModels
 {
     class VMListViewModel : ViewModelBase
     {
-        IVMModel vmModel;
+        VMModel vmModel;
         private VMListView view;
 
         public VMListView View
@@ -19,17 +22,48 @@ namespace VMClusterManager.ViewModels
             set { view = value; }
         }
 
-        private DelegateCommand<ObservableCollection<VM>> refreshVMListCommand;
-        private DelegateCommand<ObservableCollection<VMViewModel>> selectAllCommand;
-        private DelegateCommand<ObservableCollection<VMViewModel>> unselectAllCommand;
+        private string mainNodeName;
 
-        public DelegateCommand<ObservableCollection<VMViewModel>> UnselectAllCommand
+        public string MainNodeName
+        {
+            get { return mainNodeName; }
+            set { mainNodeName = value; ChangeMainNodeNameCommand.RaiseCanExecuteChanged(); OnPropertyChanged("MainNodeName"); }
+        }
+
+        private JobCommandsView jobActionsView;
+
+        public JobCommandsView JobActionsView
+        {
+            get { return jobActionsView; }
+            set { jobActionsView = value; OnJobActionsViewChanged(); }
+        }
+
+        public event EventHandler<EventArgs> JobActionsViewChanged;
+
+        private void OnJobActionsViewChanged()
+        {
+            if (JobActionsViewChanged != null)
+                JobActionsViewChanged(this, new EventArgs());
+        }
+
+        private DelegateCommand<ObservableCollection<VM>> refreshVMListCommand;
+        private DelegateCommand<IEnumerable<VMViewModel>> selectAllCommand;
+        private DelegateCommand<IEnumerable<VMViewModel>> unselectAllCommand;
+        private DelegateCommand<string> changeMainNodeNameCommand;
+
+        public DelegateCommand<string> ChangeMainNodeNameCommand
+        {
+            get { return changeMainNodeNameCommand; }
+            set { changeMainNodeNameCommand = value; OnPropertyChanged("ChangeMainNodeNameCommand"); }
+        }
+
+        public DelegateCommand<IEnumerable<VMViewModel>> UnselectAllCommand
         {
             get { return unselectAllCommand; }
             set { unselectAllCommand = value; OnPropertyChanged("UnselectAllCommand"); }
         }
 
-        public DelegateCommand<ObservableCollection<VMViewModel>> SelectAllCommand
+        public DelegateCommand<IEnumerable<VMViewModel>> SelectAllCommand
         {
             get { return selectAllCommand; }
             set { selectAllCommand = value; OnPropertyChanged("SelectAllCommand"); }
@@ -52,9 +86,9 @@ namespace VMClusterManager.ViewModels
             }
         }
 
-        private ObservableCollection<VMViewModel> vmList;
+        private ObservableCollection<VM> vmList;
 
-        public ObservableCollection<VMViewModel> VMList
+        public ObservableCollection<VM> VMList
         {
             get { return vmList; }
             set 
@@ -72,67 +106,162 @@ namespace VMClusterManager.ViewModels
             private set { activeVMList = value; }
         }
 
+        private object vmDetails;
+        private object vmProperties;
+        private object hpcJobsView;
 
-        private void FillVMList()
+        public object HpcJobsView
         {
-            ObservableCollection<VM> GroupVMList = new ObservableCollection<VM>(vmModel.ActiveVMGroup.VMList);
-            foreach (VMViewModel vm in VMList)
-            {
-                vm.Dispose();
-            }
-            this.VMList.Clear();
-            foreach (VM vm in GroupVMList)
-            {
-                VMViewModel vmViewModel = new VMViewModel(vm);
-                vmViewModel.Activated +=
-                    (o, e) =>
+            get { return hpcJobsView; }
+            set { hpcJobsView = value; OnPropertyChanged("HpcJobsView"); }
+        }
+
+        public object VMProperties
+        {
+            get { return vmProperties; }
+            set { vmProperties = value; OnPropertyChanged("VMProperties"); }
+        }
+
+        public object VMDetails
+        {
+            get { return vmDetails; }
+            set { vmDetails = value; OnPropertyChanged("VMDetails"); }
+        }
+
+        private bool detailsExpanded;
+        private bool propertiesExpanded;
+        private bool jobsExpanded;
+        private bool logExpanded;
+
+        public bool LogExpanded
+        {
+            get { return logExpanded; }
+            set { logExpanded = value; OnPropertyChanged("LogExpanded"); }
+        }
+
+        public bool JobsExpanded
+        {
+            get { return jobsExpanded; }
+            set 
+            { 
+                jobsExpanded = value;
+                if (value)
+                {
+                    if (vmModel.ActiveVMList.Count > 0)
                     {
-                        vmModel.ActiveVMList.Add((o as VMViewModel).VirtualMachine);
-                    };
-                vmViewModel.Deactivated +=
-                    (o, e) =>
+                        JobListViewModel jobs = new JobListViewModel(MainNodeName, vmModel.ActiveVMList);
+                        HpcJobsView = jobs.View;
+                        JobActionsView = jobs.ActionsView;
+                    }
+
+                    else
                     {
-                        vmModel.ActiveVMList.Remove((o as VMViewModel).VirtualMachine);
-                    };
-                this.VMList.Add(vmViewModel);
-                //OnPropertyChanged("VMList");
+                        HpcJobsView = "Select one or more Virtual Machines to explore HPC jobs running on.";
+                        
+                    }
+                    
+                }
+                else
+                {
+                    JobActionsView = null;
+                }
+                OnPropertyChanged("JobsExpanded");
             }
         }
 
-        public VMListViewModel(IVMModel vmModel)
+        public bool PropertiesExpanded
+        {
+            get { return propertiesExpanded; }
+            set 
+            { 
+                propertiesExpanded = value;
+                if (value)
+                {
+                    if (vmModel.ActiveVMList.Count > 0)
+                    {
+                        VMPropertiesViewModel vmProp = new VMPropertiesViewModel(vmModel.ActiveVMList);
+                        vmProp.ViewCloseRequested +=
+                            (o, e) =>
+                            {
+                                PropertiesExpanded = false;
+                            };
+                        VMProperties = vmProp.View;
+                    }
+                    else
+                    {
+                        VMProperties = "No Virtual Machine selected.";
+                    }
+                }
+                OnPropertyChanged("PropertiesExpanded"); 
+            }
+        }
+
+        public bool DetailsExpanded
+        {
+            get { return detailsExpanded; }
+            set 
+            {
+                detailsExpanded = value;
+                if (value)
+                {
+                    if (vmModel.ActiveVMList.Count == 1)
+                    {
+                        VMDetailsViewModel vmDet = new VMDetailsViewModel(vmModel.ActiveVMList[0]);
+                        VMDetails = vmDet.View;
+                    }
+                    else
+                    {
+                        VMDetails = "Details are available only for single VM checked";
+                    }
+                }
+                OnPropertyChanged("DetailsExpanded"); 
+            }
+        }
+
+        
+
+        public VMListViewModel(VMModel vmModel, ObservableCollection<VM> _VMList)
         {
             this.vmModel = vmModel;
             View = new VMListView();
-            this.vmList = new ObservableCollection<VMViewModel>();
+            this.VMList = _VMList;
             vmModel.ActiveVMList.Clear();
-            FillVMList();
+            
+            //FillVMList();
             RefreshVMListCommand = new DelegateCommand<ObservableCollection<VM>>(RefreshVMList, CanRefreshVMList);
-            SelectAllCommand = new DelegateCommand<ObservableCollection<VMViewModel>> (SelectAll, CanSelectAll);
-            UnselectAllCommand = new DelegateCommand<ObservableCollection<VMViewModel>>(UnselectAll, CanUnselectAll);
+            SelectAllCommand = new DelegateCommand<IEnumerable<VMViewModel>>(SelectAll, CanSelectAll);
+            UnselectAllCommand = new DelegateCommand<IEnumerable<VMViewModel>>(UnselectAll, CanUnselectAll);
+            ChangeMainNodeNameCommand = new DelegateCommand<string>(ChangeMainNode, CanChangeMainNode);
             CanExecuteRaisers = new List<Action>{
                 RefreshVMListCommand.RaiseCanExecuteChanged,
                 SelectAllCommand.RaiseCanExecuteChanged,
                 UnselectAllCommand.RaiseCanExecuteChanged
+
             };
+            this.MainNodeName = vmModel.Settings.MainNodeName;
 
             this.VMList.CollectionChanged +=
                 (obj, exp) =>
                 {
                     RefreshCommands();
+                    OnPropertyChanged("VMList");
                     
                 };
             vmModel.ActiveVMList.CollectionChanged +=
                 (obj, exp) =>
                 {
+
+                    DetailsExpanded = false;
+                    PropertiesExpanded = false;
+                    JobsExpanded = false;
+                    GC.Collect();
                     UnselectAllCommand.RaiseCanExecuteChanged();
                 };
-
-            vmModel.ActiveVMGroup.VMList.CollectionChanged +=
-                (obj, exp) =>
+            VMLog.GetInstance().CollectionChanged +=
+                (o, e) =>
                 {
-                    FillVMList();
+                    LogExpanded = true;
                 };
-
             View.SetViewModel(this);
         }
 
@@ -161,7 +290,7 @@ namespace VMClusterManager.ViewModels
         private void RefreshVMList(ObservableCollection<VM> vmList)
         {
             vmModel.ActiveVMList.Clear();
-            FillVMList();
+            //FillVMList();
         }
 
         private bool CanRefreshVMList(ObservableCollection<VM> vmList)
@@ -169,7 +298,7 @@ namespace VMClusterManager.ViewModels
             return true;
         }
 
-        private void SelectAll(ObservableCollection<VMViewModel> vmToSelect)
+        private void SelectAll(IEnumerable<VMViewModel> vmToSelect)
         {
             foreach (VMViewModel vm in vmToSelect)
             {
@@ -180,17 +309,17 @@ namespace VMClusterManager.ViewModels
             }
         }
 
-        private bool CanSelectAll(ObservableCollection<VMViewModel> vmToSelect)
+        private bool CanSelectAll(IEnumerable<VMViewModel> vmToSelect)
         {
-            bool canSelectAll = false;
-            if (vmToSelect != null)
-            {
-                canSelectAll = (vmToSelect.Count > 0);
-            }
-            return canSelectAll;
+            //bool canSelectAll = false;
+            //if (vmToSelect != null)
+            //{
+            //    canSelectAll = (vmToSelect. > 0);
+            //}
+            return true;
         }
 
-        private void UnselectAll(ObservableCollection<VMViewModel> vmToUnSelect)
+        private void UnselectAll(IEnumerable<VMViewModel> vmToUnSelect)
         {
             foreach (VMViewModel vm in vmToUnSelect)
             {
@@ -201,7 +330,7 @@ namespace VMClusterManager.ViewModels
             }
         }
 
-        private bool CanUnselectAll(ObservableCollection<VMViewModel> vmToUnSelect)
+        private bool CanUnselectAll(IEnumerable<VMViewModel> vmToUnSelect)
         {
             bool canUnselect =false;
             if (vmToUnSelect != null)
@@ -211,12 +340,30 @@ namespace VMClusterManager.ViewModels
             return canUnselect;
         }
 
-        public override void Dispose()
+        public  void Dispose()
         {
-            foreach (VMViewModel vmView in VMList)
+            //foreach (VMViewModel vmView in VMList)
+            //{
+            //    vmView.Dispose();
+            //}
+        }
+
+        private void ChangeMainNode(string newName)
+        {
+            vmModel.Settings.MainNodeName = this.MainNodeName;
+            vmModel.Settings.SaveToFile();
+            ChangeMainNodeNameCommand.RaiseCanExecuteChanged();
+            if (vmModel.ActiveVMList.Count > 0)
             {
-                vmView.Dispose();
+                JobListViewModel jobs = new JobListViewModel(MainNodeName, vmModel.ActiveVMList);
+                HpcJobsView = jobs.View;
+                JobActionsView = jobs.ActionsView;
             }
+        }
+
+        private bool CanChangeMainNode(string newName)
+        {
+            return vmModel.Settings.MainNodeName != this.MainNodeName;
         }
        
     }

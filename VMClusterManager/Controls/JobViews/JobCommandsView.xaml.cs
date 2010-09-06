@@ -24,6 +24,11 @@ namespace VMClusterManager.Controls.JobViews
             InitializeComponent();
         }
 
+        public JobCommandsView(object ViewModel): this()
+        {
+            this.DataContext = ViewModel;
+        }
+
         #region IView Members
 
         public void SetViewModel(object ViewModel)

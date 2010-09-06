@@ -1,0 +1,19 @@
+﻿<UserControl x:Class="VMClusterManager.Controls.NavigationControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:hostViews="clr-namespace:VMClusterManager.Controls.VMHostViews"
+             xmlns:vmViews="clr-namespace:VMClusterManager"
+             mc:Ignorable="d" 
+             >
+    <DockPanel>
+        <Grid>
+            <hostViews:VMHostTreeView DockPanel.Dock="Top"></hostViews:VMHostTreeView>
+        </Grid>
+        <Grid>
+            <vmViews:VMTreeView DockPanel.Dock="Top"/>
+        </Grid>
+        
+    </DockPanel>
+</UserControl>

@@ -11,6 +11,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using VMClusterManager.ViewModels.HpcModels;
 
 namespace VMClusterManager.Controls.JobViews
 {
@@ -32,5 +33,13 @@ namespace VMClusterManager.Controls.JobViews
         }
 
         #endregion
+
+        private void dgTaskList_UnloadingRow(object sender, Microsoft.Windows.Controls.DataGridRowEventArgs e)
+        {
+            if (e.Row.DataContext != null)
+            {
+                (e.Row.DataContext as TaskViewModel).Dispose();
+            }
+        }
     }
 }

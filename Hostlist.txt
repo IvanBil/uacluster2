@@ -1,2 +1,0 @@
-#Please, enter hostnames or IP addresses of you physical computers (one IP or hostname per line, empty lines not allowed)
-#you can use symbol # as first symbol in line to make comments

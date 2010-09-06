@@ -13,17 +13,17 @@ namespace VMClusterManager
         private List<Action> CanExecuteRaisers;  
 
         private ObservableCollection<VMGroup> vmGroups;
-        private DelegateCommand<VMGroup> vmGroupCreate;
-        private DelegateCommand<VMGroup> vmGroupRemove;
+        private DelegateCommand<object> vmGroupCreate;
+        private DelegateCommand<object> vmGroupRemove;
         private DelegateCommand<object> renameTreeNode;
 
-        public DelegateCommand<VMGroup> VMGroupRemove
+        public DelegateCommand<object> VMGroupRemove
         {
             get { return vmGroupRemove; }
             set { vmGroupRemove = value; OnPropertyChanged("VMGroupRemove"); }
         }
 
-        public DelegateCommand<VMGroup> VMGroupCreate
+        public DelegateCommand<object> VMGroupCreate
         {
             get { return vmGroupCreate; }
             set { vmGroupCreate = value; OnPropertyChanged("VMGroupCreate"); }
@@ -32,18 +32,18 @@ namespace VMClusterManager
         public DelegateCommand<object> RenameTreeNode
         {
             get { return renameTreeNode; }
-            set { renameTreeNode = value; }
+            set { renameTreeNode = value; OnPropertyChanged("RenameTreeNode"); }
         }
         private VMGroup activeVMGroup;
 
         public VMGroup ActiveVMGroup
         {
             get { return activeVMGroup; }
-            set 
-            { 
+            set
+            {
                 activeVMGroup = value;
                 OnPropertyChanged("ActiveVMGroup");
-                this.vmModel.ActiveVMGroup = activeVMGroup;
+                //this.vmModel.ActiveVMGroup = activeVMGroup;
             }
         }
 
@@ -52,10 +52,10 @@ namespace VMClusterManager
         public object SelectedItem
         {
             get { return selectedItem; }
-            set 
-            { 
+            set
+            {
                 selectedItem = value;
-                vmModel.SelectedTreeItem = selectedItem;
+                //vmModel.SelectedTreeItem = selectedItem;
                 OnPropertyChanged("SelectedItem");
                 RefreshCommands();
             }
@@ -71,20 +71,34 @@ namespace VMClusterManager
             get { return vmGroups; }
         }
 
+        public event EventHandler<EventArgs> RenameActiveTreeNodeRequested;
+        private void OnRenameActiveTreeNodeRequested()
+        {
+            if (RenameActiveTreeNodeRequested != null)
+            {
+                RenameActiveTreeNodeRequested(this, new EventArgs());
+            }
+        }
+
         public VMTreeViewModel(VMModel vmModel)
         {
             this.vmModel = vmModel;
             this.View = new VMTreeView();
             vmGroups = new ObservableCollection<VMGroup>();
             vmGroups.Add(vmModel.RootVMGroup);
-            VMGroupCreate = new DelegateCommand<VMGroup>(CreateVMGroup, CanCreateVMGroup);
-            VMGroupRemove = new DelegateCommand<VMGroup>(RemoveVMGroup, CanRemoveVMGroup);
+            VMGroupCreate = new DelegateCommand<object>(CreateVMGroup, CanCreateVMGroup);
+            VMGroupRemove = new DelegateCommand<object>(RemoveVMGroup, CanRemoveVMGroup);
             RenameTreeNode = new DelegateCommand<object>(RenameNode, CanRenameNode);
             CanExecuteRaisers = new List<Action>{
                 vmGroupCreate.RaiseCanExecuteChanged,
                 vmGroupRemove.RaiseCanExecuteChanged,
                 renameTreeNode.RaiseCanExecuteChanged
             };
+            this.vmModel.ActiveVMGroupChanged +=
+                (o, e) =>
+                {
+                    this.ActiveVMGroup = this.vmModel.ActiveVMGroup;
+                };
             View.SetViewModel(this);
             this.GroupCommandsView = new TreeCommandsView();
             this.GroupCommandsView.SetViewModel(this);
@@ -113,26 +127,36 @@ namespace VMClusterManager
         }
 
 
-        private void CreateVMGroup(VMGroup parent)
+        private void CreateVMGroup(object selectedItem)
         {
-            vmModel.CreateVMGroup(parent);
-            parent.Save();
+            VMGroup parent = selectedItem as VMGroup;
+            if (parent != null)
+            {
+                VMGroup newGroup = vmModel.CreateGroup(parent) as VMGroup;
+                parent.Save();
+                parent.IsExpanded = true;
+                newGroup.IsActive = true;
+                newGroup.IsInEditMode = true;
+            }
         }
 
-        private bool CanCreateVMGroup(VMGroup parent)
+        private bool CanCreateVMGroup(object selectedItem)
         {
+            Group parent = selectedItem as Group;
             bool canCreate = (parent == null) ? false : true;
             return canCreate;
         }
-        private void RemoveVMGroup(VMGroup group)
+        private void RemoveVMGroup(object selectedItem)
         {
-            vmModel.RemoveVMGroup(group);
+            VMGroup group = this.SelectedItem as VMGroup;
+            vmModel.RemoveGroup(group);
             group.Save();
         }
 
-        private bool CanRemoveVMGroup(VMGroup group)
+        private bool CanRemoveVMGroup(object selectedItem)
         {
             bool canremove = false;
+            Group group = this.SelectedItem as Group;
             if (group != null)
             {
                 if (group.ParentGroup != null)
@@ -145,12 +169,15 @@ namespace VMClusterManager
 
         private void RenameNode(object Node)
         {
-            this.View.RenameActiveTreeNode();
+            //this.View.RenameActiveTreeNode();
+            OnRenameActiveTreeNodeRequested();
+            VMGroup grp = this.SelectedItem as VMGroup;
+            grp.IsInEditMode = true;
         }
 
         private bool CanRenameNode(object Node)
         {
-            return (Node != null);
+            return (this.SelectedItem as VMGroup != null);
         }
 
         #region INotifyPropertyChanged Members

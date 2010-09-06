@@ -1,6 +1,8 @@
 ﻿using System;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Collections.Generic;
+using System.Windows;
 
 namespace VMClusterManager.ViewModels
 {
@@ -51,14 +53,25 @@ namespace VMClusterManager.ViewModels
         }
         #endregion
 
+        protected bool IsDisposed = false;
+
         #region IDisposable Members
 
-        public virtual void Dispose()
+        public void Dispose()
         {
-            throw new NotImplementedException();
+            //throw new NotImplementedException();
+            Dispose(true);
+            GC.SuppressFinalize(this);
         }
 
         #endregion
+
+        protected virtual void Dispose(bool disposing)
+        {
+            IsDisposed = true;
+        }
+
+        //protected List<Action> CanExecuteRaisers;
 
         
     }

@@ -1,7 +1,8 @@
 ﻿<Window x:Class="VMClusterManager.Controls.Dialogs.AuthenticationDialog"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    Title="AuthenticationDialog" Height="200" Width="300" >
+    Title="AuthenticationDialog" Height="200" Width="300" Style="{StaticResource WindowStyle}" >
+    
     <Window.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
@@ -18,7 +19,7 @@
         </StackPanel>
         <StackPanel Grid.Row="1" Orientation="Horizontal" VerticalAlignment="Bottom" HorizontalAlignment="Center">
             <Button Name="btnOK" IsDefault="True" Click="btnOK_Click">OK</Button>
-            <Button Name="btnCansel" IsCancel="True">Cansel</Button>
+            <Button Name="btnCansel" IsCancel="True">Cancel</Button>
         </StackPanel>
     </Grid>
 </Window>

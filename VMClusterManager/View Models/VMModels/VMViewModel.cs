@@ -19,9 +19,14 @@ namespace VMClusterManager.ViewModels.VMModels
                 if (isActivePrevious && (!isActiveVM))
                 {
                     OnDeactivated();
+                    VMModel.GetInstance().ActiveVMList.Remove(this.VirtualMachine);
                 }
                 else
                 {
+                    if (!VMModel.GetInstance().ActiveVMList.Contains(this.VirtualMachine))
+                    {
+                        VMModel.GetInstance().ActiveVMList.Add(this.VirtualMachine);
+                    }
                     OnActivated();
                 }
                 OnPropertyChanged("IsActiveVM");  
@@ -117,7 +122,9 @@ namespace VMClusterManager.ViewModels.VMModels
             set { vmName = value; OnPropertyChanged("VMName"); }
         }
         #endregion //VM Properties
-        private Thread BackgroundThread;
+        private Timer BackgroundThread;
+
+        //private bool IsDisposed = false;
         public VMViewModel(VM vm)
             : base()
         {
@@ -128,75 +135,85 @@ namespace VMClusterManager.ViewModels.VMModels
             this.creationTime = virtualMachine.CreationTime;
             UInt64 memoryUsage = virtualMachine.MemoryUsage;
             this.MemoryUsage = (memoryUsage == 0) ? "" : memoryUsage.ToString();
-            ThreadStart backgroundThreadStart = new ThreadStart(delegate()
-            {
-                while (true)
+            BackgroundThread = new Timer((o) =>
                 {
-                     UpTime = vm.UpTime;
-                     ProcessorLoad = (Utility.GetVMProcessorLoad(this.VirtualMachine)).ToString();
-                    Thread.Sleep(1000);
-                }
-            });
+                    UpTime = vm.UpTime;
+                    try
+                    {
+                        ProcessorLoad = (Utility.GetVMProcessorLoad(this.VirtualMachine)).ToString();
+                    }
+                    catch (Exception ex) { }
+                }, null, Timeout.Infinite, 1000);
+            //ThreadStart backgroundThreadStart = new ThreadStart(delegate()
+            //{
+            //    while (!this.IsDisposed)
+            //    {
+            //        UpTime = vm.UpTime;
+            //        ProcessorLoad = (Utility.GetVMProcessorLoad(this.VirtualMachine)).ToString();
+            //        Thread.Sleep(1000);
+            //    }
+                
+            //});
             if ((vm.Status != VMState.Unknown) &&
                         (vm.Status != VMState.Disabled) &&
                         (vm.Status != VMState.Paused) &&
                         (vm.Status != VMState.Suspended))
             {
-                BackgroundThread = StartNewThread(backgroundThreadStart);
+                StartTimer(BackgroundThread, 0, 1000);
+                //BackgroundThread = StartNewThread(backgroundThreadStart);
             }
-            virtualMachine.VMStatusChanged +=
-                (o, e) =>
-                {
-                    this.StatusString = virtualMachine.GetStatusString();
-                    if ((vm.Status != VMState.Unknown) &&
-                        (vm.Status != VMState.Disabled) &&
-                        (vm.Status != VMState.Paused) &&
-                        (vm.Status != VMState.Suspended))
-                    {
-                        if (BackgroundThread != null)
-                        {
-                            if (!BackgroundThread.IsAlive)
-                            {
-                                BackgroundThread = StartNewThread(backgroundThreadStart);
-                            }
-                        }
-                        else
-                        {
-                            BackgroundThread = StartNewThread(backgroundThreadStart);
-                        }
-                    }
-                    else
-                    {
-                        if (BackgroundThread != null)
-                        {
-                            BackgroundThread.Abort();
-                            BackgroundThread.Join(10);
-                        }
-                    }
-                };
-            virtualMachine.MemoryUsageChanged +=
-                (o, e) =>
-                {
-                    try
-                    {
-                        memoryUsage = virtualMachine.MemoryUsage;
-                        this.MemoryUsage = (memoryUsage == 0) ? "" : memoryUsage.ToString();
-                    }
-                    catch (COMException ex)
-                    {
-                        MessageBox.Show(ex.Message, virtualMachine.Host.Name, MessageBoxButton.OK, MessageBoxImage.Error);
-                    }
+            virtualMachine.VMStatusChanged += new VMStatusChangedEventHandler(VMStatusChangedHandler);
 
-                };
+            virtualMachine.MemoryUsageChanged += new EventHandler<EventArgs>(VMMemoryChangedHandler);
+               
+        }
+
+        private void VMStatusChangedHandler(object sender, EventArgs args)
+        {
+            this.StatusString = virtualMachine.GetStatusString();
+            if ((virtualMachine.Status != VMState.Unknown) &&
+                (virtualMachine.Status != VMState.Disabled) &&
+                (virtualMachine.Status != VMState.Paused) &&
+                (virtualMachine.Status != VMState.Suspended))
+            {
+                StartTimer(BackgroundThread, 0, 1000);
+            }
+            else
+            {
+                StopTimer(BackgroundThread);
+            }
+        }
+
+        private void VMMemoryChangedHandler(object sender, EventArgs args)
+        {
+            try
+            {
+                UInt64 memoryUsage = virtualMachine.MemoryUsage;
+                this.MemoryUsage = (memoryUsage == 0) ? "" : memoryUsage.ToString();
+            }
+            catch (COMException ex)
+            {
+                MessageBox.Show(ex.Message, virtualMachine.Host.Name, MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
 
         private Thread StartNewThread(ThreadStart ts)
         {
             Thread BackgroundThread = new Thread(ts);
-            BackgroundThread.IsBackground = true;
+            BackgroundThread.IsBackground = false;
             BackgroundThread.Priority = ThreadPriority.Lowest;
             BackgroundThread.Start();
             return BackgroundThread;
+        }
+
+        private void StartTimer(Timer t, int dueTime, int period)
+        {
+            t.Change(dueTime, period);
+        }
+
+        private void StopTimer(Timer t)
+        {
+            t.Change(Timeout.Infinite, Timeout.Infinite);
         }
 
         public event EventHandler<EventArgs> Activated;
@@ -216,15 +233,38 @@ namespace VMClusterManager.ViewModels.VMModels
 
         ~VMViewModel()
         {
-            Dispose();
+            Dispose(false);
         }
 
-        public override void Dispose()
+       
+
+        protected override void Dispose(bool disposing)
         {
-            if (BackgroundThread != null)
+            //if (BackgroundThread != null)
+            //{
+            //    BackgroundThread.Abort();
+            //}
+            //IsDisposed = true;
+            if (!IsDisposed)
             {
-                BackgroundThread.Abort();
+                if (disposing)
+                {
+                    //base.Dispose(disposing);
+                    VirtualMachine.VMStatusChanged -= new VMStatusChangedEventHandler(VMStatusChangedHandler);
+                    VirtualMachine.MemoryUsageChanged -= new EventHandler<EventArgs>(VMMemoryChangedHandler);
+                    
+                    try
+                    {
+                        StopTimer(BackgroundThread);
+                        BackgroundThread.Dispose();
+                    }
+                    catch
+                    {
+                    }
+                }
             }
+            IsDisposed = true;
+            
         }
     }
 }

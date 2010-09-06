@@ -4,6 +4,7 @@ using System.Configuration;
 using System.Data;
 using System.Linq;
 using System.Windows;
+using System.Reflection;
 
 namespace VMClusterManager
 {
@@ -12,5 +13,7 @@ namespace VMClusterManager
     /// </summary>
     public partial class App : Application
     {
+        
+
     }
 }

@@ -1,0 +1,89 @@
+﻿<Window x:Class="VMClusterManager.Controls.Dialogs.AddHostDialog"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:converters="clr-namespace:VMClusterManager.Converters"
+        xmlns:validationRules="clr-namespace:VMClusterManager.Validation"
+        Title="Add Host" SizeToContent="Height" WindowStyle="ToolWindow" Width="250" Style="{StaticResource WindowStyle}" >
+    <Window.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="DialogResources.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+
+        
+    </Window.Resources>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition/>
+            <RowDefinition Height="50"/>
+        </Grid.RowDefinitions>
+        <Grid>
+            <GroupBox Header="Please, specify host(s) to add" Margin="5,5,5,0">
+                <StackPanel Margin="5">
+                    <StackPanel.Resources>
+                        <converters:StringToIpAddressConverter x:Key="StrToIP"/>
+                        <Style TargetType="{x:Type TextBox}" BasedOn="{StaticResource {x:Type TextBox}}">
+                            <Setter Property="Margin" Value="5"/>                          
+                        </Style>
+                        <Style TargetType="{x:Type RadioButton}" BasedOn="{StaticResource {x:Type RadioButton}}">
+                            <Setter Property="Margin" Value="5"/>
+                        </Style>
+                        <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource {x:Type TextBlock}}">
+                            <Setter Property="Margin" Value="5,0,0,0"/>
+                        </Style>
+                    </StackPanel.Resources>
+                    <RadioButton Name="IsSingleHost" IsChecked="True" Checked="IsSingleHost_Checked" Unchecked="IsSingleHost_Unchecked" Content="Single host"/>
+                    <TextBlock Text="Host name or IP address:"/>
+                    <TextBox Name="tbHostName" IsEnabled="{Binding ElementName=IsSingleHost, Path=IsChecked}" Text="{Binding HostName, UpdateSourceTrigger=PropertyChanged}"/>
+                    <RadioButton Name="IsHostRange" Content="Host range" IsChecked="False"/>
+                    <Grid IsEnabled="{Binding ElementName=IsHostRange, Path=IsChecked}">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="50*" />
+                            <ColumnDefinition Width="50*" />
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                        </Grid.RowDefinitions>
+                        <TextBlock Text="Start IP:"/>
+                        <TextBlock Grid.Column="1" Text="End IP:"/>
+                        <TextBox Name="tbStartIP" Grid.Row="1" Grid.Column="0" Validation.Error="TextBox_Error">
+                            <TextBox.Text>
+                                <Binding Path="StartIP" UpdateSourceTrigger="PropertyChanged" Converter="{StaticResource StrToIP}" NotifyOnValidationError="True">
+                                    <Binding.ValidationRules>
+                                        <validationRules:StringToIPAddressValidation/>
+                                    </Binding.ValidationRules>
+                                </Binding>
+                            </TextBox.Text>
+                        </TextBox>
+
+                        <TextBox Name="tbEndIP" Grid.Row="1" Grid.Column="1" Validation.Error="TextBox_Error">
+                            <TextBox.Text>
+                                <Binding Path="EndIP" UpdateSourceTrigger="PropertyChanged" Converter="{StaticResource StrToIP}" NotifyOnValidationError="True">
+                                    <Binding.ValidationRules>
+                                        <validationRules:StringToIPAddressValidation/>
+                                    </Binding.ValidationRules>
+                                    
+                                    
+                                </Binding>
+                            </TextBox.Text>
+                        </TextBox> 
+                                 
+                    </Grid>
+                    
+                </StackPanel>
+                
+            </GroupBox>
+        </Grid>
+        <DockPanel Grid.Row="1">
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                <Button Name="btnOK" Command="{Binding OKCommand}" IsDefault="True">
+                    OK
+                </Button>
+                <Button Name="btnCansel" IsCancel="True">Cancel</Button>
+            </StackPanel>
+
+        </DockPanel>
+    </Grid>
+</Window>

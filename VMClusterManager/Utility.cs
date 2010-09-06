@@ -4,6 +4,8 @@ using System.Collections.ObjectModel;
 using System.Management;
 using System.Windows;
 using System.Runtime.InteropServices;
+using System.Xml.Linq;
+using System.Linq;
 
 namespace VMClusterManager
 {
@@ -321,6 +323,25 @@ namespace VMClusterManager
             return RASD;
         }
 
+        public static List<ManagementObject> GetRASD(VM _vm)
+        {
+            //ManagementObject RASD = null;
+            ManagementObject vm = _vm.Instance;
+            ManagementObjectCollection settingDatas = vm.GetRelated("Msvm_VirtualSystemsettingData");
+            List<ManagementObject> RASDList = new List<ManagementObject>();
+            foreach (ManagementObject settingData in settingDatas)
+            {
+                //retrieve the rasd
+                ManagementObjectCollection RASDs = settingData.GetRelated("Msvm_ResourceAllocationsettingData");
+                foreach (ManagementObject rasdInstance in RASDs)
+                {
+                    RASDList.Add(rasdInstance);
+                }
+
+            }
+            return RASDList;
+        }
+
 
         public static VMJob RequestStateChange(VM vm, int state)
         {
@@ -329,8 +350,21 @@ namespace VMClusterManager
             ManagementBaseObject inParams = vmObj.GetMethodParameters("RequestStateChange");
             inParams["RequestedState"] = state;
             ManagementBaseObject outParams = vmObj.InvokeMethod("RequestStateChange", inParams, null);
-            VMJob ThisJob = new VMJob(new ManagementObject(scope, new ManagementPath((string)outParams["Job"]), null));
+            UInt32 returnValue = (UInt32)outParams["ReturnValue"];
+            string jobPath = (string)outParams["Job"];
+            VMJob ThisJob = null;
+            if (jobPath != null)
+            {
+                ThisJob = new VMJob(new ManagementObject(scope, new ManagementPath(jobPath), null));
+            }
+          
             inParams.Dispose();
+            outParams.Dispose();
+            vmObj.Dispose();
+            if ((jobPath == null) && (returnValue != ReturnCode.Completed) && (returnValue != ReturnCode.Started))
+            {
+                throw new VMStateChangeException(returnValue);
+            }
             //JobCompleted(outParams, scope, out ErrorCode);
             return ThisJob;
         }
@@ -641,7 +675,182 @@ namespace VMClusterManager
             }
             return SnapshotTree;
         }
+
+        public static ManagementObject GetMemory(VM vm)
+        {
+            ManagementObject mem = null;
+            ManagementObject vmObj = vm.Instance;
+            ManagementObjectCollection settings = vmObj.GetRelated("Msvm_VirtualSystemsettingData");
+            foreach (ManagementObject setting in settings)
+            {
+                ManagementObjectCollection memSettings = setting.GetRelated("Msvm_MemorySettingData");
+                foreach (ManagementObject memsetting in memSettings)
+                {
+                    mem = memsetting;
+                }
+            }
+            return mem;
+        }
+
+        /// <summary>
+        /// Sets amount of RAM for virtual machine 
+        /// </summary>
+        /// <param name="vm">Target Virtual Machine</param>
+        /// <param name="quantity">Amount of memory</param>
+        /// <returns>VMJob object. If returns null VMResourcesUpdateException is thrown in case of error occures.</returns>
+        public static VMJob SetMemory(VM vm, UInt64 quantity)
+        {
+            return SetVMResource(vm, GetMemory(vm), new Dictionary<string, object> { { "VirtualQuantity", quantity } });
+        }
+
+        public static VMJob SetVMResource(VM vm, ManagementObject resource, Dictionary<string, object> Params)
+        {
+            ManagementScope scope = new ManagementScope(@"\\" + vm.Host.Name + @"\root\virtualization", vm.Host.HostConnectionOptions);
+            ManagementObject virtualSystemService = Utility.GetServiceObject(scope, "Msvm_VirtualSystemManagementService");
+            ManagementBaseObject inParams = virtualSystemService.GetMethodParameters("ModifyVirtualSystemResources");
+            ManagementObject vmObj = vm.Instance;
+            //ManagementObject resource = GetMemory(vm);
+            //memSettings["Limit"] = quantity;
+            //memSettings["Reservation"] = quantity;
+            foreach (string key in Params.Keys)
+            {
+                resource[key] = Params[key];
+            }
+            //resource["VirtualQuantity"] = quantity;
+            string[] Resources = new string[1];
+            Resources[0] = resource.GetText(TextFormat.CimDtd20);
+            //ManagementBaseObject inParams = virtualSystemService.GetMethodParameters("ModifyVirtualSystemResources");
+            inParams["ComputerSystem"] = vmObj.Path.Path;
+            inParams["ResourcesettingData"] = Resources;
+            VMJob ThisJob = null;
+            ManagementBaseObject outParams = virtualSystemService.InvokeMethod("ModifyVirtualSystemResources", inParams, null);
+            //MessageBox.Show(outParams.GetText(TextFormat.Mof));
+            string jobPath = (string)outParams["Job"];
+            UInt32 returnValue = (UInt32)outParams["ReturnValue"];
+            if (jobPath != null)
+            {
+                ManagementObject jobObj = new ManagementObject(scope, new ManagementPath(jobPath), null);
+                ThisJob = new VMJob(jobObj);
+            }
+            inParams.Dispose();
+            //resource.Dispose();
+            outParams.Dispose();
+            vmObj.Dispose();
+
+            virtualSystemService.Dispose();
+            if ((jobPath == null) && (returnValue != ReturnCode.Completed) && (returnValue != ReturnCode.Started))
+            {
+                throw new VMResourcesUpdateException(returnValue);
+            }
+            return ThisJob;
+        }
+
+        public static ManagementObject GetProcessor(VM vm)
+        {
+            ManagementObject proc = null;
+            ManagementObject vmObj = vm.Instance;
+            ManagementObjectCollection settings = vmObj.GetRelated("Msvm_VirtualSystemsettingData");
+            foreach (ManagementObject setting in settings)
+            {
+                ManagementObjectCollection memSettings = setting.GetRelated("Msvm_ProcessorSettingData");
+                foreach (ManagementObject memsetting in memSettings)
+                {
+                    proc = memsetting;
+                }
+            }
+            return proc;
+        }
+
+        public static VMJob SetProcessor(VM vm, UInt64 quantity)
+        {
+            return SetVMResource(vm, GetProcessor(vm), new Dictionary<string, object> { { "VirtualQuantity", quantity } });
+        }
+
+        public static IDictionary<string, string> GetKvpItems(VM vm)
+        {
+            ManagementObject vmObj = vm.Instance;
+            ManagementObjectCollection exchCompColl = vmObj.GetRelated("Msvm_KvpExchangeComponent");
+            //string dnsName = null;
+            Dictionary<string, string> kvpDict = new Dictionary<string, string>();
+            foreach (ManagementObject exchComp in exchCompColl)
+            {
+                string[] kvpstrings = (string[])exchComp["GuestIntrinsicExchangeItems"];
+                foreach (string kvpstring in kvpstrings)
+                {
+                    //kvpstring contains XML representation of Msvm_KvpExchangeDataItem object.
+                    XElement xkvp = XElement.Parse(kvpstring);
+                    kvpDict.Add(xkvp.Elements("PROPERTY").Single(p => p.Attribute("NAME").Value == "Name").Element("VALUE").Value, xkvp.Elements("PROPERTY").Single(p => p.Attribute("NAME").Value == "Data").Element("VALUE").Value);
+                    //test if Name property of Msvm_KvpExchangeDataItem object is FullyQualifiedDomainName
+                    //if (xkvp.Elements("PROPERTY").Any(p => p.Attribute("NAME").Value == "Name" && p.Element("VALUE").Value == "FullyQualifiedDomainName"))
+                    //{
+                    //    //get Fully Qualified DomainName from Value of Data property
+                    //    dnsName = xkvp.Elements("PROPERTY").Single(p => p.Attribute("NAME").Value == "Data").Element("VALUE").Value;
+                    //    break;
+                    //}
+
+                    
+                }
+                break;
+            }
+            return kvpDict;
+        }
+
+        public static string GetFullyQualifiedDomainName(VM vm)
+        {
+            //ManagementObject vmObj = vm.Instance;
+            //ManagementObjectCollection exchCompColl = vmObj.GetRelated("Msvm_KvpExchangeComponent");
+            //string dnsName = null;
+            //foreach (ManagementObject exchComp in exchCompColl)
+            //{
+            //    string[] kvpstrings = (string[])exchComp["GuestIntrinsicExchangeItems"];
+            //    foreach (string kvpstring in kvpstrings)
+            //    {
+            //        //kvpstring contains XML representation of Msvm_KvpExchangeDataItem object.
+            //        XElement xkvp = XElement.Parse(kvpstring);
+
+            //        //test if Name property of Msvm_KvpExchangeDataItem object is FullyQualifiedDomainName
+            //        if (xkvp.Elements("PROPERTY").Any(p => p.Attribute("NAME").Value == "Name" && p.Element("VALUE").Value == "FullyQualifiedDomainName"))
+            //        {
+            //            //get Fully Qualified DomainName from Value of Data property
+            //            dnsName = xkvp.Elements("PROPERTY").Single(p => p.Attribute("NAME").Value == "Data").Element("VALUE").Value;
+            //            break;
+            //        }
+
+            //        //var query = from val
+            //        //                in
+            //        //                (from prop in xkvp.Elements() where (prop.Attribute("Name").Value == "Name") select prop)
+            //        //            select val.Element("Value").Value;
+            //        //foreach (string NameValue in query)
+            //        //{
+            //        //    if (NameValue == "FullyQualifiedDomainName")
+            //        //    {
+            //        //    }
+            //        //}
+            //        //if (xkvp.Elements() == "FullyQualifiedDomainName")
+            //        //{
+            //        //    dnsName = (string)kvp["Data"];
+            //        //    break;
+            //        //}
+            //    }
+            //    break;
+            //}
+            string retVal = null;
+            try
+            {
+                retVal = Utility.GetKvpItems(vm)["FullyQualifiedDomainName"];
+            }
+            catch (Exception ex) { };
+            return retVal;
+        }
+
+        // #region HOST UTILITIES
+
+        //public static UInt64 GetHostMemoryAmount
+
+        //#endregion
     }
 
-    
+   
+
+
 }

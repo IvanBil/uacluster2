@@ -161,7 +161,7 @@ namespace VMClusterManager
         public const UInt32 Unknown = 32771;
         public const UInt32 Timeout = 32772;
         public const UInt32 InvalidParameter = 32773;
-        public const UInt32 SystemInUser = 32774;
+        public const UInt32 SystemInUse = 32774;
         public const UInt32 InvalidState = 32775;
         public const UInt32 IncorrectDataType = 32776;
         public const UInt32 SystemNotAvailable = 32777;
@@ -366,23 +366,23 @@ namespace VMClusterManager
             set { time = value; }
         }
 
-        private object source;
+        private string source;
 
-        public object Source
+        public string Source
         {
             get { return source; }
             set { source = value; }
         }
 
-        private object action;
+        private string action;
 
-        public object Action
+        public string Action
         {
             get { return action; }
             set { action = value; }
         }
 
-        public LogMessage(DateTime _time, short _messageType, string _message, object _source, object _action)
+        public LogMessage(DateTime _time, short _messageType, string _message, string _source, string _action)
         {
             time = _time;
             messageType = _messageType;
@@ -391,7 +391,7 @@ namespace VMClusterManager
             action = _action;
         }
 
-        public LogMessage(short _messageType, string message, object _source, object _action)
+        public LogMessage(short _messageType, string message, string _source, string _action)
             : this(DateTime.Now, _messageType, message, _source, _action)
         {
         }
@@ -418,5 +418,60 @@ namespace VMClusterManager
             return Instance;
         }
 
+        public void AddMessage(LogMessage message)
+        {
+            Dispatcher UIDispatcher = VMModel.GetInstance().UIDispatcher;
+            UIDispatcher.Invoke(
+                new Action<LogMessage> (
+                 delegate(LogMessage m)
+                {
+                    VMLog.GetInstance().Add(m);
+                }), 
+                message);
+        }
+
+    }
+
+    public class GuestOS
+    {
+        private string oSName;
+
+        public string OSName
+        {
+            get { return oSName; }
+            private set { oSName = value; }
+        }
+
+        private string oSVersion;
+
+        public string OSVersion
+        {
+            get { return oSVersion; }
+            private set { oSVersion = value; }
+        }
+
+        private string cSDVersion;
+
+        public string CSDVersion
+        {
+            get { return cSDVersion; }
+            private set { cSDVersion = value; }
+        }
+
+        private string ipv4Address;
+
+        public string IPv4Address
+        {
+            get { return ipv4Address; }
+            private set { ipv4Address = value; }
+        }
+
+        public GuestOS(string name, string osVer, string csdVer, string ipAddr)
+        {
+            this.OSName = name;
+            this.OSVersion = osVer;
+            this.CSDVersion = csdVer;
+            this.IPv4Address = ipAddr;
+        }
     }
 }

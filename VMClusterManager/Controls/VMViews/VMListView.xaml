@@ -2,6 +2,7 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:my="clr-namespace:Microsoft.Windows.Controls;assembly=WPFToolkit"
+    xmlns:converters="clr-namespace:VMClusterManager.Converters"
              xmlns:local="clr-namespase:VMClusterManager;assembly=VMClusterManager"
              >
     <UserControl.Resources >
@@ -9,12 +10,14 @@
             <Setter Property="VerticalAlignment" Value="Center" />
             <Setter Property="Margin" Value="8,0,3,0" />
         </Style>
+        <converters:ModelToViewModelConverter x:Key="ModelToViewModel"/>
     </UserControl.Resources>
     <DockPanel>
-        <Expander DockPanel.Dock="Bottom" BorderBrush="Black" BorderThickness="1">
-            <TextBlock Text="Properties"></TextBlock>
+        
+        <Expander Header="Properties" DockPanel.Dock="Bottom" BorderBrush="Black" BorderThickness="1" IsExpanded="{Binding PropertiesExpanded, Mode=TwoWay}">
+            <ContentControl Name="VMProperties" Content="{Binding VMProperties}"/>
         </Expander>
-        <Expander Name="expVMLog" DockPanel.Dock="Bottom" BorderBrush="Black" BorderThickness="1" Header="Log">
+        <Expander Name="expVMLog" DockPanel.Dock="Bottom" BorderBrush="Black" BorderThickness="1" Header="Log" IsExpanded="{Binding LogExpanded, Mode=OneWay}" >
             <my:DataGrid ItemsSource="{Binding Log, Mode=OneWay}" AutoGenerateColumns="False">
                 <my:DataGrid.Columns>
                     <my:DataGridTemplateColumn>
@@ -39,13 +42,34 @@
                     <my:DataGridTextColumn Header="Time" Binding="{Binding Time, Mode=OneWay}"/>
 
                 </my:DataGrid.Columns>
-            </my:DataGrid>
-           
+            </my:DataGrid>  
+        </Expander>
+        <Expander Header="Details" DockPanel.Dock="Bottom" BorderBrush="Black" BorderThickness="1" IsExpanded="{Binding DetailsExpanded, Mode=TwoWay}">
+            <ContentControl Name="VMDetailsContent" Content="{Binding VMDetails}"/>
+        </Expander>
+
+        <Expander Header="Jobs" DockPanel.Dock="Bottom" BorderBrush="Black" BorderThickness="1" IsExpanded="{Binding JobsExpanded, Mode=TwoWay}">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="Head node name: " VerticalAlignment="Center"/>
+                    <TextBox Name="MainNodeName" Text="{Binding MainNodeName, Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}" MinWidth="150" />
+                    <Button Content="Change" MinWidth="60" Command="{Binding ChangeMainNodeNameCommand}" 
+                            CommandParameter="{Binding ElementName=MainNodeName, Path=Text}"/>
+                </StackPanel>
+                <ContentControl Grid.Row="1" Name="JobsView" Content="{Binding HpcJobsView}"/>
+            </Grid>
+            
         </Expander>
 
         <Grid>
-            <my:DataGrid ScrollViewer.VerticalScrollBarVisibility="Visible" AutoGenerateColumns="False" 
-                         Name="dgVMList" ItemsSource="{Binding VMList, Mode=OneWay}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+            <my:DataGrid  ScrollViewer.VerticalScrollBarVisibility="Visible" AutoGenerateColumns="False" 
+                         Name="dgVMList" ItemsSource="{Binding VMList, Mode=OneWay, Converter={StaticResource ModelToViewModel}}" 
+                          UnloadingRow="dgVMList_UnloadingRow"
+                          HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
                 <my:DataGrid.Columns>
                     <my:DataGridTemplateColumn MinWidth="10" Width="Auto" SortMemberPath="Include">
                         <my:DataGridTemplateColumn.Header>
@@ -54,12 +78,12 @@
                                     <MenuItem Header="All" Command="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type my:DataGrid}}, 
                                         Path=DataContext.SelectAllCommand, Mode=OneWay}"
                                         CommandParameter="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type my:DataGrid}}, 
-                                        Path=DataContext.VMList}"
+                                        Path=ItemsSource}"
                                               />
                                     <MenuItem Header="None" Command="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type my:DataGrid}}, 
                                         Path=DataContext.UnselectAllCommand, Mode=OneWay}"
                                         CommandParameter="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type my:DataGrid}}, 
-                                        Path=DataContext.VMList}"/>
+                                        Path=ItemsSource}"/>
                                 </MenuItem>
                             </Menu>
                         </my:DataGridTemplateColumn.Header>

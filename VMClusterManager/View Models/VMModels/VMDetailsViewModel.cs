@@ -11,7 +11,7 @@ namespace VMClusterManager
     public class VMDetailsViewModel : VMViewModel
     {
         VMDetailsView view;
-        IVMModel vmModel;
+        VMModel vmModel;
 
         //private string vmName;
         private string vmstatusString;
@@ -55,6 +55,46 @@ namespace VMClusterManager
             }
         }
 
+        private string vmDomainName;
+
+        public string VMDomainName
+        {
+            get { return vmDomainName; }
+            set { vmDomainName = value; OnPropertyChanged("VMDomainName"); }
+        }
+
+        private string csdVersion;
+
+        public string CSDVersion
+        {
+            get { return csdVersion; }
+            set { csdVersion = value; OnPropertyChanged("CSDVersion"); }
+        }
+
+        private string osName;
+
+        public string OSName
+        {
+            get { return osName; }
+            set { osName = value; OnPropertyChanged("OSName"); }
+        }
+
+        private string osVersion;
+
+        public string OSVersion
+        {
+            get { return osVersion; }
+            set { osVersion = value; OnPropertyChanged("OSVersion"); }
+        }
+
+        private string iPv4Address;
+
+        public string IPv4Address
+        {
+            get { return iPv4Address; }
+            set { iPv4Address = value; OnPropertyChanged("IPv4Address"); }
+        }
+
         
         private Thread BackgroundThread;
         public VMDetailsViewModel(VM vm):base(vm)
@@ -62,14 +102,22 @@ namespace VMClusterManager
             view = new VMDetailsView();
             this.vmModel = VMModel.GetInstance();
             this.IsActiveVM = true;
-            lock (vmModel.ActiveVMList)
-            {
-                vmModel.ActiveVMList.Clear();
-                vmModel.ActiveVMList.Add(this.VirtualMachine);
-            }
+            //lock (vmModel.ActiveVMList)
+            //{
+            //    vmModel.ActiveVMList.Clear();
+            //    vmModel.ActiveVMList.Add(this.VirtualMachine);
+            //}
             
             VMName = this.VirtualMachine.Name;
             vmstatusString = this.VirtualMachine.StatusString;
+            VMDomainName = this.VirtualMachine.GetDomainName();
+            GuestOS guestOS = this.VirtualMachine.GetGuestOS();
+            if (guestOS == null)
+                guestOS = new GuestOS (string.Empty, string.Empty,string.Empty, string.Empty);
+            OSName = guestOS.OSName;
+            OSVersion = guestOS.OSVersion;
+            CSDVersion = guestOS.CSDVersion;
+            IPv4Address = guestOS.IPv4Address;
             VMSnapshot snapshotTree = this.VirtualMachine.SnapshotTree;
             if (snapshotTree != null)
             {
@@ -132,6 +180,14 @@ namespace VMClusterManager
                {
                    this.VMName = this.VirtualMachine.Name;
                    this.VMStatusString = this.VirtualMachine.GetStatusString();
+                   this.VMDomainName = this.VirtualMachine.GetDomainName();
+                   guestOS = this.VirtualMachine.GetGuestOS();
+                   if (guestOS == null)
+                       guestOS = new GuestOS(string.Empty, string.Empty, string.Empty,string.Empty);
+                   OSName = guestOS.OSName;
+                   OSVersion = guestOS.OSVersion;
+                   CSDVersion = guestOS.CSDVersion;
+                   IPv4Address = guestOS.IPv4Address;
                    if ((this.VirtualMachine.Status != VMState.Unknown) && (this.VirtualMachine.Status != VMState.Disabled))
                    {
                        if (BackgroundThread != null)
@@ -164,12 +220,23 @@ namespace VMClusterManager
             view.SetViewModel(this);
         }
 
+        //private string GetOSName(VM vm)
+        //{
+        //    string osName = string.Empty;
+        //    GuestOS guestOS = vm.GetGuestOS();
+        //    if (guestOS != null)
+        //    {
+        //        osName = string.Format("{0} version {1} {2}", guestOS.OSName, guestOS.OSVersion, guestOS.CSDVersion);
+        //    }
+        //    return osName;
+        //}
+
         public VMDetailsView View
         {
             get { return view; }
         }
 
-        public override void Dispose()
+        public void Dispose()
         {
             base.Dispose();
             if (BackgroundThread != null)

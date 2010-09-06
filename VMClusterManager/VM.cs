@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Management;
+using System.Collections.Generic;
 
 namespace VMClusterManager
 {
@@ -11,6 +12,22 @@ namespace VMClusterManager
     {
 
         private string name;
+        private string dnsName = string.Empty;
+
+        private string DnsName
+        {
+            get { return dnsName; }
+            set { dnsName = value; }
+        }
+
+        private GuestOS guestOSParams = null;
+
+        private GuestOS GuestOSParams
+        {
+            get { return guestOSParams; }
+            set { guestOSParams = value; }
+        }
+
         public string StatusString
         {
             get { return GetStatusString(); }
@@ -103,7 +120,7 @@ namespace VMClusterManager
             }
             private set { snapshotTree = value; OnVMSnapshotsChanged(); }
         }
-        //TODO: Snapshots structure
+        
         //private byte[] smallthumbnailImage;
         /// <summary>
         /// Small Thumbnail Image (80x60)
@@ -165,7 +182,21 @@ namespace VMClusterManager
 
         public UInt16 NumberOfProcessors
         {
-            get { return numberOfProcessors; }
+            get 
+            {
+                numberOfProcessors = 0;
+                try
+                {
+                    ManagementBaseObject procNumObj = Utility.GetSummaryInformation(this, new uint[] { VMRequestedInformation.NumberOfProcessors });
+                    numberOfProcessors = (UInt16)procNumObj["NumberOfProcessors"];
+
+                }
+                finally
+                {
+                    
+                }
+                return numberOfProcessors;
+            }
             //set { numberOfProcessors = value; }
         }
 
@@ -174,12 +205,15 @@ namespace VMClusterManager
             get 
             {
                 memoryUsage = 0;
-                if ((this.Status != VMState.Disabled) && (this.Status != VMState.Suspended))
+                if (this.Status == VMState.Enabled )
                 {
-                    ManagementBaseObject memUsageObj = Utility.GetSummaryInformation(this, new uint[] { VMRequestedInformation.MemoryUsage });
-                    if (memUsageObj["MemoryUsage"] != null)
+                    try
                     {
+                        ManagementBaseObject memUsageObj = Utility.GetSummaryInformation(this, new uint[] { VMRequestedInformation.MemoryUsage });
                         memoryUsage = (UInt64)memUsageObj["MemoryUsage"];
+                    }
+                    finally
+                    {
                     }
                 }
                 return memoryUsage; 
@@ -226,16 +260,16 @@ namespace VMClusterManager
         public VM(VMHost hst, ManagementObject manObj)
         {
             host = hst;
-            this.instance = manObj;
+            this.instance = manObj;            
             this.Name = manObj["ElementName"].ToString();
+            //this.DnsName = Utility.GetFullyQualifiedDomainName(this);
             this.guid = manObj["Name"].ToString();
             this.status = (UInt16)manObj["EnabledState"];
-            this.TimeOfLastConfigurationChange = Utility.ConvertToDateTime(manObj["TimeOfLastConfigurationChange"].ToString());
+            //this.TimeOfLastConfigurationChange = Utility.ConvertToDateTime(manObj["TimeOfLastConfigurationChange"].ToString());
             this.TimeOfLastStateChange = Utility.ConvertToDateTime(manObj["TimeOfLastStateChange"].ToString());
             this.description = manObj["Description"].ToString();
             ManagementBaseObject summaryInfo = Utility.GetSummaryInformation(this,new uint[] {
                 VMRequestedInformation.CreationTime,
-                VMRequestedInformation.NumberOfProcessors,
             });
             this.creationTime = Utility.ConvertToDateTime(summaryInfo["CreationTime"].ToString());
             SnapshotTree = Utility.GetVMSnapshotTree(this);
@@ -244,6 +278,65 @@ namespace VMClusterManager
             settingsModificationWatcher = new VMSettingsModificationEventWatcher(this, OnVMSettingsChange);
         }
 
+        public GuestOS GetGuestOS()
+        {
+            GuestOS os = null;
+            if (this.Status == VMState.Enabled)
+            {
+                if (GuestOSParams == null)
+                {
+                    IDictionary<string, string> kvps = null;
+                    try
+                    {
+                        kvps = Utility.GetKvpItems(this);
+                    }
+                    catch (Exception ex) { };
+                    if (kvps != null)
+                    {
+                        string OSName = null;
+                        string OSVer = null;
+                        string csdver = null;
+                        string ip4Addr = string.Empty;
+                        if (kvps.ContainsKey("OSName"))
+                        { OSName = kvps["OSName"]; }
+                        if (kvps.ContainsKey("OSVersion"))
+                            OSVer = kvps["OSVersion"];
+                        if (kvps.ContainsKey("CSDVersion"))
+                            csdver = kvps["CSDVersion"];
+                        if (kvps.ContainsKey("NetworkAddressIPv4"))
+                            ip4Addr = kvps["NetworkAddressIPv4"] ?? string.Empty;
+                        if ((OSName != null) && (OSVer != null) && (csdver != null))
+                        {
+                            os = new GuestOS(OSName, OSVer, csdver, ip4Addr);
+                        }
+                    }
+                }
+            }
+            return os;
+        }
+
+        public string GetDomainName()
+        {
+            //string fqdn = String.Empty; 
+            string dn = string.Empty;
+            //GetFullyQualifiedDomainName works only for running VM with running windows
+            if (this.Status == VMState.Enabled)
+            {
+                if (DnsName == string.Empty)
+                {
+                    DnsName = Utility.GetFullyQualifiedDomainName(this) ?? String.Empty;
+                }
+                if (DnsName.Contains("."))
+                {
+                    dn = DnsName.Remove(DnsName.IndexOf("."));
+                }
+                else
+                {
+                    dn = DnsName;
+                }
+            }
+            return dn;
+        }
   
         #region Events
         private event VMStatusChangedEventHandler vmStatusChanged;
@@ -355,9 +448,11 @@ namespace VMClusterManager
 
         public void ConnectTo()
         {
-            Process vmConnection = new Process ();
-            ProcessStartInfo vmConnectionInfo = new ProcessStartInfo(@"C:\Program Files\Hyper-V\vmconnect.exe", this.Host.Name + " \"" + this.Name + "\"");
+            Process vmConnection = new Process();
+            string path = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles) + @"\Hyper-V\vmconnect.exe";
+            ProcessStartInfo vmConnectionInfo = new ProcessStartInfo(path, this.Host.Name + " -G " + this.GUID);
             Process.Start(vmConnectionInfo);
+
         }
 
         public VMJob CreateSnapshot()
@@ -380,6 +475,10 @@ namespace VMClusterManager
             return Utility.RemoveVirtualSystemSnapshotTree(this, snapshot);
         }
         #endregion //VMActions
+
+        #region VM resources
+        
+        #endregion
 
         public override string ToString()
         {

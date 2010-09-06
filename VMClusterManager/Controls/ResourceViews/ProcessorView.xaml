@@ -1,0 +1,29 @@
+﻿<UserControl x:Class="VMClusterManager.Controls.ResourceViews.ProcessorView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             mc:Ignorable="d" 
+              HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+    <UserControl.Resources>
+        <Style TargetType="{x:Type TextBox}">
+            <Style.Triggers>
+                <Trigger Property="Validation.HasError" Value="True">
+                    <Setter Property="ToolTip" Value="Value must be integer greater than 0."/>
+
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+    </UserControl.Resources>
+    <StackPanel>
+        <StackPanel Orientation="Horizontal" DockPanel.Dock="Top">
+            <!--<TextBox Text="{Binding VirtualQuantity, Mode=TwoWay, ValidatesOnExceptions=True, UpdateSourceTrigger=PropertyChanged}" MinWidth="30"/>-->
+            <TextBlock Text="Number of processors: " TextAlignment="Center" VerticalAlignment="Center"/>
+            <ComboBox ItemsSource="{Binding VirtualQuantityCollection}" Text="{Binding VirtualQuantity, Mode=TwoWay, ValidatesOnExceptions=True, UpdateSourceTrigger=PropertyChanged}" MinWidth="50" 
+                      IsEditable="False" />
+            
+        </StackPanel>
+
+
+    </StackPanel>
+</UserControl>
