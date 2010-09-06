@@ -1,0 +1,49 @@
+﻿<UserControl x:Class="VMClusterManager.Controls.VMHostViews.VMHostTreeActionsView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+
+             >
+    <Grid>
+        <StackPanel>
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+                <Separator Grid.Column="0"/>
+                <TextBlock Text="Host tree actions" Grid.Column="1"/>
+                <Separator Grid.Column="2"/>
+            </Grid>
+            <TextBlock>
+                <Hyperlink Command="{Binding AddHostCommand}" CommandParameter="{Binding SelectedItem}" >
+                    <TextBlock Text="Add host..."></TextBlock>
+                </Hyperlink>
+            </TextBlock>
+
+            <TextBlock>
+                <Hyperlink Command="{Binding RenameTreeNode}" CommandParameter="{Binding SelectedItem}" >
+                    <TextBlock Text="Rename"></TextBlock>
+                </Hyperlink>
+            </TextBlock>
+            <TextBlock>
+                <Hyperlink Command="{Binding VMHostGroupCreate}" CommandParameter="{Binding SelectedItem}">
+                    <TextBlock Text="Create new group"></TextBlock>
+                </Hyperlink>
+            </TextBlock>
+            <TextBlock>
+                <Hyperlink Command="{Binding RemoveVMHostTreeNodeCommand}" CommandParameter="{Binding SelectedItem}">
+                    <TextBlock Text="Remove"></TextBlock>
+                </Hyperlink>
+            </TextBlock>
+
+            <TextBlock>
+                <Hyperlink Command="{Binding MoveToGroupCommand}" CommandParameter="{Binding SelectedItem}">
+                    <TextBlock Text="Move to group..."></TextBlock>
+                </Hyperlink>
+            </TextBlock>
+        </StackPanel>
+    </Grid>
+</UserControl>

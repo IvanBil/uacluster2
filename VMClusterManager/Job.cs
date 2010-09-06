@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Management;
+using System.Windows;
 
 namespace VMClusterManager
 {

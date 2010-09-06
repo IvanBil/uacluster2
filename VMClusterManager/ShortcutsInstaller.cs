@@ -70,13 +70,13 @@ namespace ShortcutsDemoApp
 			}
 		}
 
-        private string HostlistShortcutName
-        {
-            get
-            {
-                return "Hostlist";
-            }
-        }
+        //private string HostlistShortcutName
+        //{
+        //    get
+        //    {
+        //        return "Hostlist";
+        //    }
+        //}
 
 
 		private string ShortcutDescription
@@ -144,14 +144,14 @@ namespace ShortcutsDemoApp
 			bool installDesktopShortcut = Context.Parameters[DESKTOP_SHORTCUT_PARAM] != string.Empty;
 			bool installQuickLaunchShortcut = Context.Parameters[QUICKLAUNCH_SHORTCUT_PARAM] != string.Empty;
             bool installStartMenuGroup = Context.Parameters[STARTMENU_GROUP_PARAM] != string.Empty;
-            //MessageBox.Show("Installer started");
-
+            
+            
 			if (installDesktopShortcut)
 			{
 				// If this is an All Users install then we need to install the desktop shortcut for 
 				// all users.  .Net does not give us access to the All Users Desktop special folder,
 				// but we can get this using the Windows Scripting Host.
-				string desktopFolder = null;
+				string desktopFolder = string.Empty;
 
 				if (allusers)
 				{
@@ -161,21 +161,22 @@ namespace ShortcutsDemoApp
 						object allUsersDesktop = "AllUsersDesktop";
 						WshShell shell = new WshShellClass();
 						desktopFolder = shell.SpecialFolders.Item(ref allUsersDesktop).ToString();
+                        
 					}
 					catch {}
 				}
-				if (desktopFolder == null)
-					desktopFolder = Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory);
 
+				if (desktopFolder == String.Empty)
+					desktopFolder = Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory);
 				CreateShortcut(desktopFolder, ExecutiveShortcutName, ShortcutTarget, ShortcutDescription);
 			}
-
+           
 			if (installQuickLaunchShortcut)
 			{
 				CreateShortcut(QuickLaunchFolder, ExecutiveShortcutName, ShortcutTarget, ShortcutDescription);
 			}
-
-            string startMenu = null;
+           
+            string startMenu = string.Empty;
 
             if (allusers)
             {
@@ -187,18 +188,19 @@ namespace ShortcutsDemoApp
                 }
                 catch { }
             }
-            if (startMenu == null)
+            if (startMenu == string.Empty)
                 startMenu = Environment.GetFolderPath(Environment.SpecialFolder.Programs);
             if (installStartMenuGroup)
             {
 
                 CreateShortcut(startMenu + "\\" + StartMenuFolderName, ExecutiveShortcutName, ShortcutTarget, ShortcutDescription);
                 //install shortcut to hostlist.txt
-                CreateShortcut(startMenu + "\\" + StartMenuFolderName, HostlistShortcutName,
-                    Path.GetDirectoryName(ShortcutTarget) + "\\Hostlist.txt",
-                    "Open host list setup file for editing");
+                //CreateShortcut(startMenu + "\\" + StartMenuFolderName, HostlistShortcutName,
+                //    Path.GetDirectoryName(ShortcutTarget) + "\\Hostlist.txt",
+                //    "Open host list setup file for editing");
                 
             }
+            
 		}
 
 
@@ -234,7 +236,7 @@ namespace ShortcutsDemoApp
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show(ex.Message, "Error!", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show(ex.Message, "Error occured while creating directory " + folder + "!", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
 			try
@@ -286,7 +288,7 @@ namespace ShortcutsDemoApp
             }
             startMenu += "\\" + StartMenuFolderName;
             DeleteShortcut(startMenu, ExecutiveShortcutName);
-            DeleteShortcut(startMenu, HostlistShortcutName);
+            //DeleteShortcut(startMenu, HostlistShortcutName);
             ///Delete directory from start menu
             //DeleteShortcut(StartMenuFolderName, ShortcutName);
             try

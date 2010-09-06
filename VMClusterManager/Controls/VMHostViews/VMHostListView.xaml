@@ -1,0 +1,80 @@
+﻿<UserControl x:Class="VMClusterManager.Controls.VMHostViews.VMHostListView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:my="clr-namespace:Microsoft.Windows.Controls;assembly=WPFToolkit"
+    xmlns:converters="clr-namespace:VMClusterManager.Converters"
+             mc:Ignorable="d" 
+             >
+    <UserControl.Resources >
+        <Style x:Key="DataGridCheckBoxStyle" TargetType="CheckBox" BasedOn="{StaticResource {x:Type CheckBox}}">
+            <Setter Property="VerticalAlignment" Value="Center" />
+            <Setter Property="Margin" Value="8,0,3,0" />
+        </Style>
+        <converters:ModelToViewModelConverter x:Key="ModelToViewModel"/>
+    </UserControl.Resources>
+    <Grid>
+        <my:DataGrid  ScrollViewer.VerticalScrollBarVisibility="Visible" AutoGenerateColumns="False" 
+                         Name="dgVMHostList" ItemsSource="{Binding HostList, Mode=OneWay, Converter={StaticResource ModelToViewModel}}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+            <!--<my:DataGrid.Resources>
+                <Style TargetType="{x:Type my:DataGridCell}">
+                    <Style.Setters>
+                        <Setter Property="TextBlock.TextAlignment" Value="Center" />
+                    </Style.Setters>
+                </Style>
+                
+            </my:DataGrid.Resources>-->
+            <my:DataGrid.Columns>
+                <my:DataGridTemplateColumn MinWidth="10" Width="Auto" SortMemberPath="Include">
+                    <my:DataGridTemplateColumn.Header>
+                        <Menu>
+                            <MenuItem Header="Check">
+                                <MenuItem Header="All" Command="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type my:DataGrid}}, 
+                                        Path=DataContext.SelectAllCommand, Mode=OneWay}"
+                                        CommandParameter="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type my:DataGrid}}, 
+                                        Path=ItemsSource}"
+                                              />
+                                <MenuItem Header="None" Command="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type my:DataGrid}}, 
+                                        Path=DataContext.UnselectAllCommand, Mode=OneWay}"
+                                        CommandParameter="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type my:DataGrid}}, 
+                                        Path=ItemsSource}"/>
+                            </MenuItem>
+                        </Menu>
+                    </my:DataGridTemplateColumn.Header>
+                    <my:DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <CheckBox Style="{StaticResource DataGridCheckBoxStyle}" HorizontalAlignment="Center" 
+                                           IsChecked="{Binding IsActive}" />
+                        </DataTemplate>
+                    </my:DataGridTemplateColumn.CellTemplate>
+                </my:DataGridTemplateColumn>
+                <my:DataGridTextColumn 
+                    Header="Name"
+                    Binding="{Binding Name}"
+                    />
+                <my:DataGridTextColumn Header="CPUs"  Binding="{Binding ProcessorsCount, Mode=OneWay}">
+                    
+
+                </my:DataGridTextColumn>
+                <my:DataGridTextColumn 
+                    Header="Cores"
+                    Binding="{Binding CoresCount, Mode=OneWay}"
+                    />
+                <my:DataGridTextColumn 
+                    Header="CPU load"
+                    Binding="{Binding CpuUsage, Mode=OneWay}"
+                    />
+                <my:DataGridTextColumn 
+                    Header="Total RAM"
+                    Binding="{Binding TotalMemory, Mode=OneWay}"
+                    />
+                <my:DataGridTextColumn 
+                    Header="Free RAM"
+                    Binding="{Binding FreeMemory, Mode=OneWay}"
+                    />
+                
+            </my:DataGrid.Columns>
+        </my:DataGrid>
+    </Grid>
+</UserControl>

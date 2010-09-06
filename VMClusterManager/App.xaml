@@ -5,10 +5,16 @@
     <Application.Resources>
         <ImageSource x:Key="ErrorIcon">Resources\Images\Error.png</ImageSource>
         <ImageSource x:Key="WarningIcon">Resources\Images\Warning.png</ImageSource>
-        <Style TargetType="{x:Type TextBlock}">
+        <Style x:Key="WindowStyle" TargetType="{x:Type Window}">
             <Setter Property="FontSize" Value="14"/>
         </Style>
-        <Style TargetType="{x:Type TextBox}">
+        <Style TargetType="{x:Type MenuItem}">
+            <Setter Property="FontSize" Value="14"/>
+        </Style>
+        <!--<Style TargetType="{x:Type TextBlock}">
+            <Setter Property="FontSize" Value="14"/>
+        </Style>-->
+        <!--<Style x:Key="TextBoxStyle" TargetType="{x:Type TextBox}">
             <Setter Property="FontSize" Value="14"/>
         </Style>
         <Style TargetType="{x:Type PasswordBox}">
@@ -17,11 +23,12 @@
         
         <Style TargetType="{x:Type Label}">
             <Setter Property="FontSize" Value="14"/>
-        </Style>
+        </Style>-->
         
         <Style TargetType="{x:Type Button}">
             <Setter Property="Height" Value="25"/>
             <Setter Property="Width" Value="50"/> 
+            <!--<Setter Property="Margin" Value="5,5,5,5"/>-->
         </Style>
         
     </Application.Resources>

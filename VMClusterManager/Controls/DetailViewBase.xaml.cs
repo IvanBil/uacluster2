@@ -13,6 +13,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using VMClusterManager.ViewModels;
 using VMClusterManager.ViewModels.VMModels;
+using VMClusterManager.ViewModels.HpcModels;
 
 namespace VMClusterManager.Controls
 {
@@ -40,8 +41,8 @@ namespace VMClusterManager.Controls
                     else if (model.SelectedTreeItem is VMGroup)
                     {
                         
-                        VMListViewModel viewModel = new VMListViewModel(VMModel.GetInstance());
-                        this.Content = viewModel.View;
+                       // VMListViewModel viewModel = new VMListViewModel(VMModel.GetInstance());
+                        //this.Content = viewModel.View;
                         GC.Collect();
                     }
 

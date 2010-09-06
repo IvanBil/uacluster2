@@ -3,10 +3,11 @@ using System.Linq;
 using System.ComponentModel;
 using System.Collections.ObjectModel;
 using System.Xml.Linq;
+using VMClusterManager.ViewModels;
 
 namespace VMClusterManager
 {
-    public class Group : INotifyPropertyChanged
+    public class Group : ViewModelBase
     {
         private string name;
 
@@ -20,8 +21,17 @@ namespace VMClusterManager
                 {
                     (this.DataObject as XElement).SetAttributeValue("Name", name);
                 }
+                //this.Save();
                 OnPropertyChanged("Name");
             }
+        }
+
+        private bool isExpanded;
+
+        public bool IsExpanded
+        {
+            get { return isExpanded; }
+            set { isExpanded = value; OnPropertyChanged("IsExpanded"); }
         }
 
         private Guid guid;
@@ -57,7 +67,7 @@ namespace VMClusterManager
             set { childGroups = value; }
         }
 
-        public Group(string name, Guid _guid, Group parent)
+        public Group(string name, Guid _guid, Group parent) : base()
         {
             this.name = name;
             this.parentGroup = parent;
@@ -112,7 +122,7 @@ namespace VMClusterManager
                 if (this.DataObject is XElement)
                 {
                     XElement tree = this.DataObject as XElement;
-                    var CheckGroupPresenceQuery = from el in tree.Elements() where el.Attribute("GUID").Value == _group.GUID.ToString() select el;
+                    var CheckGroupPresenceQuery = from el in tree.Elements("Group") where el.Attribute("GUID").Value == _group.GUID.ToString() select el;
                     if (CheckGroupPresenceQuery.Count() == 0)
                     {
                         //Add new group to this XML tree
@@ -138,7 +148,7 @@ namespace VMClusterManager
             }
         }
 
-        public virtual void CreateGroup(string name)
+        public virtual Group CreateGroup(string name)
         {
             throw new NotImplementedException();
 
@@ -163,13 +173,17 @@ namespace VMClusterManager
                     foreach (Group child in root.ChildGroups)
                     {
                         result = GetElementByID(_GUID, child);
+                        if (result != null)
+                        {
+                            break;
+                        }
                     }
                 }
             }
             return result;
         }
 
-        protected virtual XElement GetXElement(VMGroup curGroup)
+        protected XElement GetXElement(Group curGroup)
         {
             XElement elem = new XElement("Group", new XAttribute("Name", curGroup.Name), new XAttribute("GUID", curGroup.GUID));
             //defend collection from modifying
@@ -188,18 +202,18 @@ namespace VMClusterManager
             return elem;
         }
        
-        #region INotifyPropertyChanged Members
+        //#region INotifyPropertyChanged Members
 
-        public event PropertyChangedEventHandler PropertyChanged;
+        //public event PropertyChangedEventHandler PropertyChanged;
 
-        protected void OnPropertyChanged(string property)
-        {
-            if (PropertyChanged != null)
-            {
-                PropertyChanged(this, new PropertyChangedEventArgs(property));
-            }
-        }
+        //protected void OnPropertyChanged(string property)
+        //{
+        //    if (PropertyChanged != null)
+        //    {
+        //        PropertyChanged(this, new PropertyChangedEventArgs(property));
+        //    }
+        //}
 
-        #endregion
+        //#endregion
     }
 }

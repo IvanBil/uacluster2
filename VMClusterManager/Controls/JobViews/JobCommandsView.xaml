@@ -4,9 +4,34 @@
  >
     <Grid>
         <StackPanel MinWidth="120">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+                <Separator Grid.Column="0"/>
+                <TextBlock Text="Job and Task actions" Grid.Column="1"/>
+                <Separator Grid.Column="2"/>
+            </Grid>
             <TextBlock>
-                <Hyperlink Command="{Binding VMListStart}" CommandParameter="{Binding ActiveVMList}">
+                <Hyperlink Command="{Binding CancelJobListCommand}" CommandParameter="{Binding JobList}">
                     <TextBlock Text="Cancel Job"></TextBlock>
+                </Hyperlink>
+            </TextBlock>
+            <TextBlock>
+                <Hyperlink Command="{Binding RequeueJobListCommand}" CommandParameter="{Binding JobList}">
+                    <TextBlock Text="Requeue Job"></TextBlock>
+                </Hyperlink>
+            </TextBlock>
+            <TextBlock>
+                <Hyperlink Command="{Binding CancelTaskListCommand}" CommandParameter="{Binding ActiveVMList}">
+                    <TextBlock Text="Cancel Task"></TextBlock>
+                </Hyperlink>
+            </TextBlock>
+            <TextBlock>
+                <Hyperlink Command="{Binding RequeueTaskListCommand}" CommandParameter="{Binding ActiveVMList}">
+                    <TextBlock Text="Requeue Task"></TextBlock>
                 </Hyperlink>
             </TextBlock>
         </StackPanel>

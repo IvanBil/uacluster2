@@ -15,44 +15,68 @@
     {
         "Entry"
         {
-        "MsmKey" = "8:_56191DE0AB4E9FE38A740088CCE07877"
-        "OwnerKey" = "8:_8A9C86CDB064D80AEB2CAA0E0661B6EC"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_5954570007BC4FD9B1E166C6772023AE"
-        "OwnerKey" = "8:_UNDEFINED"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_5E9B5BE38EF1FEC8D9BB3934B01F2F60"
-        "OwnerKey" = "8:_DCEF1B620636E179922764AA7C4CBA1F"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_5E9B5BE38EF1FEC8D9BB3934B01F2F60"
+        "MsmKey" = "8:_265E50782CAFED170FB9C404F33A7158"
         "OwnerKey" = "8:_BAD40046BCDE419AA2250C00EEC60E47"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
-        "MsmKey" = "8:_5E9B5BE38EF1FEC8D9BB3934B01F2F60"
-        "OwnerKey" = "8:_E39C36622CB22ED3AE885CA6E75729BA"
+        "MsmKey" = "8:_265E50782CAFED170FB9C404F33A7158"
+        "OwnerKey" = "8:_80A9AD6F33FDD829C02335711F3E43F3"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
-        "MsmKey" = "8:_8A9C86CDB064D80AEB2CAA0E0661B6EC"
+        "MsmKey" = "8:_265E50782CAFED170FB9C404F33A7158"
+        "OwnerKey" = "8:_557DACDDF61F15AB2949713675A9021E"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_265E50782CAFED170FB9C404F33A7158"
+        "OwnerKey" = "8:_6A522A9963C3D6E165B2F262B333E560"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_557DACDDF61F15AB2949713675A9021E"
         "OwnerKey" = "8:_BAD40046BCDE419AA2250C00EEC60E47"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
-        "MsmKey" = "8:_A196B5147F8498E82915367CE8CEA7CF"
+        "MsmKey" = "8:_6A522A9963C3D6E165B2F262B333E560"
+        "OwnerKey" = "8:_557DACDDF61F15AB2949713675A9021E"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_80A9AD6F33FDD829C02335711F3E43F3"
+        "OwnerKey" = "8:_557DACDDF61F15AB2949713675A9021E"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_81B5F42394E98BD98FDD1EDF86E6761B"
         "OwnerKey" = "8:_BAD40046BCDE419AA2250C00EEC60E47"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_AB9B643D0ABA37830295159E919D9DF5"
+        "OwnerKey" = "8:_557DACDDF61F15AB2949713675A9021E"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_AD8E3B26C5DB0FFCD5310C9808059167"
+        "OwnerKey" = "8:_265E50782CAFED170FB9C404F33A7158"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_B9BD17CC5443D6C2C30DEB5B3DFB11AD"
+        "OwnerKey" = "8:_D0E36C32A4CF35A39CD5FF2B6CC812C4"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -69,14 +93,8 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_DCEF1B620636E179922764AA7C4CBA1F"
+        "MsmKey" = "8:_D0E36C32A4CF35A39CD5FF2B6CC812C4"
         "OwnerKey" = "8:_BAD40046BCDE419AA2250C00EEC60E47"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_E39C36622CB22ED3AE885CA6E75729BA"
-        "OwnerKey" = "8:_DCEF1B620636E179922764AA7C4CBA1F"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -88,31 +106,37 @@
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_A196B5147F8498E82915367CE8CEA7CF"
+        "OwnerKey" = "8:_557DACDDF61F15AB2949713675A9021E"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_DCEF1B620636E179922764AA7C4CBA1F"
+        "OwnerKey" = "8:_80A9AD6F33FDD829C02335711F3E43F3"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_E39C36622CB22ED3AE885CA6E75729BA"
+        "OwnerKey" = "8:_6A522A9963C3D6E165B2F262B333E560"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_5E9B5BE38EF1FEC8D9BB3934B01F2F60"
+        "OwnerKey" = "8:_265E50782CAFED170FB9C404F33A7158"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_8A9C86CDB064D80AEB2CAA0E0661B6EC"
+        "OwnerKey" = "8:_81B5F42394E98BD98FDD1EDF86E6761B"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_UNDEFINED"
+        "OwnerKey" = "8:_D0E36C32A4CF35A39CD5FF2B6CC812C4"
         "MsmSig" = "8:_UNDEFINED"
         }
     }
@@ -254,7 +278,7 @@
                 {
                 "Name" = "8:.NET Framework"
                 "Message" = "8:[VSDNETMSG]"
-                "FrameworkVersion" = "8:3.5.30729"
+                "FrameworkVersion" = "8:3.5.30729   "
                 "AllowLaterVersions" = "11:FALSE"
                 "InstallUrl" = "8:http://go.microsoft.com/fwlink/?LinkId=76617"
                 }
@@ -262,60 +286,20 @@
         }
         "File"
         {
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_56191DE0AB4E9FE38A740088CCE07877"
-            {
-            "SourcePath" = "8:wshom.ocx"
-            "TargetName" = "8:wshom.ocx"
-            "Tag" = "8:"
-            "Folder" = "8:_4C4A7B6873C74BFF8624EA3BF892C4BB"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:TRUE"
-            "IsDependency" = "11:TRUE"
-            "IsolateTo" = "8:"
-            }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_5954570007BC4FD9B1E166C6772023AE"
-            {
-            "SourcePath" = "8:..\\Hostlist.txt"
-            "TargetName" = "8:Hostlist.txt"
-            "Tag" = "8:"
-            "Folder" = "8:_4C4A7B6873C74BFF8624EA3BF892C4BB"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:FALSE"
-            "IsolateTo" = "8:"
-            }
-            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_5E9B5BE38EF1FEC8D9BB3934B01F2F60"
+            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_265E50782CAFED170FB9C404F33A7158"
             {
             "AssemblyRegister" = "3:1"
-            "AssemblyIsInGAC" = "11:FALSE"
+            "AssemblyIsInGAC" = "11:TRUE"
             "AssemblyAsmDisplayName" = "8:Microsoft.Hpc.Scheduler.Properties, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
-                    "_5E9B5BE38EF1FEC8D9BB3934B01F2F60"
+                    "_265E50782CAFED170FB9C404F33A7158"
                     {
-                    "Name" = "8:Microsoft.Hpc.Scheduler.Properties.DLL"
+                    "Name" = "8:Microsoft.Hpc.Scheduler.Properties.dll"
                     "Attributes" = "3:512"
                     }
                 }
-            "SourcePath" = "8:Microsoft.Hpc.Scheduler.Properties.DLL"
+            "SourcePath" = "8:Microsoft.Hpc.Scheduler.Properties.dll"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_4C4A7B6873C74BFF8624EA3BF892C4BB"
@@ -333,20 +317,20 @@
             "IsDependency" = "11:TRUE"
             "IsolateTo" = "8:"
             }
-            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_8A9C86CDB064D80AEB2CAA0E0661B6EC"
+            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_557DACDDF61F15AB2949713675A9021E"
             {
             "AssemblyRegister" = "3:1"
-            "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:Interop.IWshRuntimeLibrary, Version=1.0.0.0, Culture=neutral, processorArchitecture=x86"
+            "AssemblyIsInGAC" = "11:TRUE"
+            "AssemblyAsmDisplayName" = "8:Microsoft.Hpc.Scheduler, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
-                    "_8A9C86CDB064D80AEB2CAA0E0661B6EC"
+                    "_557DACDDF61F15AB2949713675A9021E"
                     {
-                    "Name" = "8:Interop.IWshRuntimeLibrary.DLL"
+                    "Name" = "8:Microsoft.Hpc.Scheduler.dll"
                     "Attributes" = "3:512"
                     }
                 }
-            "SourcePath" = "8:Interop.IWshRuntimeLibrary.DLL"
+            "SourcePath" = "8:Microsoft.Hpc.Scheduler.dll"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_4C4A7B6873C74BFF8624EA3BF892C4BB"
@@ -364,14 +348,76 @@
             "IsDependency" = "11:TRUE"
             "IsolateTo" = "8:"
             }
-            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_A196B5147F8498E82915367CE8CEA7CF"
+            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_6A522A9963C3D6E165B2F262B333E560"
+            {
+            "AssemblyRegister" = "3:1"
+            "AssemblyIsInGAC" = "11:TRUE"
+            "AssemblyAsmDisplayName" = "8:Microsoft.Hpc.Scheduler.NodeManagement, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL"
+                "ScatterAssemblies"
+                {
+                    "_6A522A9963C3D6E165B2F262B333E560"
+                    {
+                    "Name" = "8:Microsoft.Hpc.Scheduler.NodeManagement.dll"
+                    "Attributes" = "3:512"
+                    }
+                }
+            "SourcePath" = "8:Microsoft.Hpc.Scheduler.NodeManagement.dll"
+            "TargetName" = "8:"
+            "Tag" = "8:"
+            "Folder" = "8:_4C4A7B6873C74BFF8624EA3BF892C4BB"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:TRUE"
+            "IsolateTo" = "8:"
+            }
+            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_80A9AD6F33FDD829C02335711F3E43F3"
+            {
+            "AssemblyRegister" = "3:1"
+            "AssemblyIsInGAC" = "11:TRUE"
+            "AssemblyAsmDisplayName" = "8:Microsoft.Hpc.Scheduler.Store, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL"
+                "ScatterAssemblies"
+                {
+                    "_80A9AD6F33FDD829C02335711F3E43F3"
+                    {
+                    "Name" = "8:Microsoft.Hpc.Scheduler.Store.dll"
+                    "Attributes" = "3:512"
+                    }
+                }
+            "SourcePath" = "8:Microsoft.Hpc.Scheduler.Store.dll"
+            "TargetName" = "8:"
+            "Tag" = "8:"
+            "Folder" = "8:_4C4A7B6873C74BFF8624EA3BF892C4BB"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:TRUE"
+            "IsolateTo" = "8:"
+            }
+            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_81B5F42394E98BD98FDD1EDF86E6761B"
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
             "AssemblyAsmDisplayName" = "8:WPFToolkit, Version=3.5.40128.1, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
-                    "_A196B5147F8498E82915367CE8CEA7CF"
+                    "_81B5F42394E98BD98FDD1EDF86E6761B"
                     {
                     "Name" = "8:WPFToolkit.DLL"
                     "Attributes" = "3:512"
@@ -392,6 +438,66 @@
             "PackageAs" = "3:1"
             "Register" = "3:1"
             "Exclude" = "11:FALSE"
+            "IsDependency" = "11:TRUE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_AB9B643D0ABA37830295159E919D9DF5"
+            {
+            "SourcePath" = "8:Microsoft.Hpc.Scheduler.tlb"
+            "TargetName" = "8:Microsoft.Hpc.Scheduler.tlb"
+            "Tag" = "8:"
+            "Folder" = "8:_4C4A7B6873C74BFF8624EA3BF892C4BB"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:2"
+            "Exclude" = "11:TRUE"
+            "IsDependency" = "11:TRUE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_AD8E3B26C5DB0FFCD5310C9808059167"
+            {
+            "SourcePath" = "8:Microsoft.Hpc.Scheduler.Properties.tlb"
+            "TargetName" = "8:Microsoft.Hpc.Scheduler.Properties.tlb"
+            "Tag" = "8:"
+            "Folder" = "8:_4C4A7B6873C74BFF8624EA3BF892C4BB"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:2"
+            "Exclude" = "11:TRUE"
+            "IsDependency" = "11:TRUE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_B9BD17CC5443D6C2C30DEB5B3DFB11AD"
+            {
+            "SourcePath" = "8:wshom.ocx"
+            "TargetName" = "8:wshom.ocx"
+            "Tag" = "8:"
+            "Folder" = "8:_4C4A7B6873C74BFF8624EA3BF892C4BB"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:TRUE"
             "IsDependency" = "11:TRUE"
             "IsolateTo" = "8:"
             }
@@ -446,51 +552,20 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
-            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_DCEF1B620636E179922764AA7C4CBA1F"
+            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_D0E36C32A4CF35A39CD5FF2B6CC812C4"
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:Microsoft.Hpc.Scheduler, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:Interop.IWshRuntimeLibrary, Version=1.0.0.0, Culture=neutral, processorArchitecture=x86"
                 "ScatterAssemblies"
                 {
-                    "_DCEF1B620636E179922764AA7C4CBA1F"
+                    "_D0E36C32A4CF35A39CD5FF2B6CC812C4"
                     {
-                    "Name" = "8:Microsoft.Hpc.Scheduler.DLL"
+                    "Name" = "8:Interop.IWshRuntimeLibrary.DLL"
                     "Attributes" = "3:512"
                     }
                 }
-            "SourcePath" = "8:Microsoft.Hpc.Scheduler.DLL"
-            "TargetName" = "8:"
-            "Tag" = "8:"
-            "Folder" = "8:_4C4A7B6873C74BFF8624EA3BF892C4BB"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:TRUE"
-            "IsolateTo" = "8:"
-            }
-            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_E39C36622CB22ED3AE885CA6E75729BA"
-            {
-            "AssemblyRegister" = "3:1"
-            "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:Microsoft.Hpc.Scheduler.Store, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL"
-                "ScatterAssemblies"
-                {
-                    "_E39C36622CB22ED3AE885CA6E75729BA"
-                    {
-                    "Name" = "8:Microsoft.Hpc.Scheduler.Store.DLL"
-                    "Attributes" = "3:512"
-                    }
-                }
-            "SourcePath" = "8:Microsoft.Hpc.Scheduler.Store.DLL"
+            "SourcePath" = "8:Interop.IWshRuntimeLibrary.DLL"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_4C4A7B6873C74BFF8624EA3BF892C4BB"
@@ -565,7 +640,7 @@
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:VMClusterManager"
         "ProductCode" = "8:{1ECD12F7-DC2B-4C5C-8CDC-3BC244938ED7}"
-        "PackageCode" = "8:{92303C43-5D43-48C8-AD1A-A05410FC0D7E}"
+        "PackageCode" = "8:{7369BA7D-46C1-4130-B766-3F283D115C16}"
         "UpgradeCode" = "8:{16EF6742-2E87-4E2C-960E-8EFCB77B8957}"
         "AspNetVersion" = "8:4.0.30319.0"
         "RestartWWWService" = "11:FALSE"

@@ -42,7 +42,15 @@ namespace VMClusterManager
             //}
             catch (ManagementException ex)
             {
-                MessageBox.Show(ex.Message, ex.Source, MessageBoxButton.OK, MessageBoxImage.Error);
+                
+                //ErrorCode = -2147217300
+                string advice = "";
+                switch (ex.ErrorCode)
+                {
+                    case (ManagementStatus)(-2147217300): advice = "To fix the problem please try to reboot target computer";break ;
+                }
+                MessageBox.Show("While attempting to subscribe on event in scope " + scope.Path + " " + ex.GetType().ToString() + " occured:" + Environment.NewLine +
+                    ex.Message + Environment.NewLine + advice, "WMI Event Watcher", MessageBoxButton.OK, MessageBoxImage.Error);
             }
             finally
             {

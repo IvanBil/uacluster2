@@ -19,18 +19,48 @@ namespace VMClusterManager
         {
             get
             {
+                //ObservableCollection<Object> coll = new ObservableCollection<object>(ChildGroups.Cast<object>());
                 ObservableCollection<Object> coll = new ObservableCollection<object>();
-                foreach (VMGroup grp in ChildGroups)
+                lock (ChildGroups)
                 {
-                    coll.Add(grp);
+                    foreach (VMGroup grp in ChildGroups)
+                    {
+                        coll.Add(grp);
+                    }
                 }
-                foreach (VM vm in VMList)
+                lock (VMList)
                 {
-                    coll.Add(vm);
+                    foreach (VM vm in VMList)
+                    {
+                        coll.Add(vm);
+                    }
                 }
-
                
                 return coll;
+            }
+        }
+
+        private bool isInEditMode;
+
+        public bool IsInEditMode
+        {
+            get { return isInEditMode; }
+            set { isInEditMode = value; OnPropertyChanged("IsInEditMode"); }
+        }
+
+        private bool isActive;
+
+        public bool IsActive
+        {
+            get { return isActive; }
+            set
+            {
+                isActive = value;
+                if (value)
+                {
+                    VMModel.GetInstance().ActiveVMGroup = this;
+                }
+                OnPropertyChanged("IsActive");
             }
         }
 
@@ -42,26 +72,33 @@ namespace VMClusterManager
         }
 
 
-        private bool isRoot;
+        //private bool isRoot;
 
-        public bool IsRoot
+        //public bool IsRoot
+        //{
+        //    get { return isRoot; }
+        //    set { isRoot = value; }
+        //}
+
+        public VMGroup(string name):this(name, null)
+            //this(name,Guid.NewGuid())
         {
-            get { return isRoot; }
-            set { isRoot = value; }
+
         }
 
-        public VMGroup(string name):
-            this(name,Guid.NewGuid())
+        public VMGroup(string name, Group parent) :
+            this(new XElement("Group", new XAttribute("Name", name), new XAttribute("GUID", Guid.NewGuid().ToString())), parent)
         {
-
         }
+
+        //public VMGroup(string 
 
         public VMGroup(XElement xVMGroup)
             : this(xVMGroup, null)
         {
         }
 
-        public VMGroup(XElement xVMGroup, VMGroup parent)
+        public VMGroup(XElement xVMGroup, Group parent)
             : base(xVMGroup,parent)
         {
             var childgroupQuery = from g in xVMGroup.Elements() where g.Name == "Group" select g;
@@ -83,36 +120,42 @@ namespace VMClusterManager
                 };
         }
 
-        public VMGroup(string name, Guid _guid):this(name, _guid, null)
-        {
-        }
+        //public VMGroup(string name, Guid _guid)
+        //    : this(name, _guid, null)
+        //{
+        //}
 
-        public VMGroup(string name, Guid _guid, VMGroup parent):base(name,_guid,parent)
-        {
-            vmList = new ObservableCollection<VM>();
-            vmList.CollectionChanged +=
-                (o, e) =>
-                {
-                    OnPropertyChanged("Children");
-                    OnVMListChanged(e);
-                };
-            ChildGroups.CollectionChanged +=
-                (o, e) =>
-                {
-                    OnPropertyChanged("Children");
-                };
-        }
-       
+        //public VMGroup(string name, Guid _guid, VMGroup parent)
+        //    : base(name, _guid, parent)
+        //{
+        //    vmList = new ObservableCollection<VM>();
+        //    vmList.CollectionChanged +=
+        //        (o, e) =>
+        //        {
+        //            OnPropertyChanged("Children");
+        //            OnVMListChanged(e);
+        //        };
+        //    ChildGroups.CollectionChanged +=
+        //        (o, e) =>
+        //        {
+        //            OnPropertyChanged("Children");
+        //        };
+        //}
+        private object SyncObject = new object ();
+
         public void AddVM(VM vm)
         {
-            vmList.Add(vm);
-            if (this.DataObject is XElement)
+            lock (SyncObject)
             {
-                XElement tree = this.DataObject as XElement;
-                var CheckVMPresenceQuery = from el in tree.Elements() where el.Attribute("GUID").Value == vm.GUID.ToString() select el;
-                if (CheckVMPresenceQuery.Count() == 0)
+                VMList.Add(vm);
+                if (this.DataObject is XElement)
                 {
-                    tree.Add(new XElement("VM", new XAttribute("GUID", vm.GUID)));
+                    XElement tree = this.DataObject as XElement;
+                    var CheckVMPresenceQuery = from el in tree.Elements() where el.Attribute("GUID").Value == vm.GUID.ToString() select el;
+                    if (CheckVMPresenceQuery.Count() == 0)
+                    {
+                        tree.Add(new XElement("VM", new XAttribute("GUID", vm.GUID)));
+                    }
                 }
             }
             OnPropertyChanged("VMList");
@@ -133,16 +176,18 @@ namespace VMClusterManager
             OnPropertyChanged("VMList");
         }
 
-        public override void CreateGroup(string name)
+        public override Group CreateGroup(string name)
         {
+            VMGroup newGroup = new VMGroup(new XElement("Group", new XAttribute("Name", name), new XAttribute("GUID", Guid.NewGuid())), this);
             if (this.DataObject is XElement)
             {
-                this.AddGroup(new VMGroup(new XElement("Group", new XAttribute("Name", name), new XAttribute("GUID", Guid.NewGuid())), this));
+                this.AddGroup(newGroup);
             }
+            return newGroup;
         }
 
 
-        protected override XElement GetXElement(VMGroup curGroup)
+        protected XElement GetXElement(VMGroup curGroup)
         {
             XElement elem = new XElement("Group", new XAttribute("Name", curGroup.Name), new XAttribute("GUID", curGroup.GUID));
             //defend collection from modifying
@@ -189,9 +234,10 @@ namespace VMClusterManager
             {
                 foreach (VMGroup group in root.ChildGroups)
                 {
-                    if (FindParentFor(vm, group) != null)
+                    parent = FindParentFor(vm, group);
+                    if (parent != null)
                     {
-                        parent = group;
+                        //parent = group;
                         break;
                     }
                 }

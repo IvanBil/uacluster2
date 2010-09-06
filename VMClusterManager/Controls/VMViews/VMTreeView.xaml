@@ -2,32 +2,49 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="clr-namespace:VMClusterManager"
-             xmlns:controls="clr-namespace:VMClusterManager.Controls"
+    xmlns:controls="clr-namespace:VMClusterManager.Controls"
+    xmlns:commands="clr-namespace:VMClusterManager.CommandBase"
     >
     <UserControl.Resources>
-        <DataTemplate x:Key="EditableTextBlock">
+        <!--<DataTemplate x:Key="EditableTextBlock">
             <TextBox />
-        </DataTemplate>
+        </DataTemplate>-->
+        <commands:CommandReference x:Key="RenameTreeNodeCommandRef" Command="{Binding RenameTreeNode}" />
+        <commands:CommandReference x:Key="RemoveTreeNodeRef" Command="{Binding VMGroupRemove}" />
     </UserControl.Resources>
+     
     <Grid>
-        <TreeView Name="treeElements" ItemsSource="{Binding VMGroups}" SelectedItemChanged="treeElements_SelectedItemChanged" PreviewKeyDown="treeElements_PreviewKeyDown" >    
+        <TreeView Name="treeElements" ItemsSource="{Binding VMGroups}" 
+                  SelectedItemChanged="treeElements_SelectedItemChanged" >
+            <TreeView.InputBindings>
+                <KeyBinding Key="F2" Command="{StaticResource RenameTreeNodeCommandRef}"/>
+                <KeyBinding Key="Del" Command="{StaticResource RemoveTreeNodeRef}"/>
+                <!--<MouseBinding MouseAction="LeftClick" Command="{Binding RenameTreeNode}" CommandParameter="{Binding SelectedItem}"/>-->
+            </TreeView.InputBindings>
             <TreeView.Resources>
+                
                 <HierarchicalDataTemplate DataType="{x:Type local:VM}">
                     <StackPanel Orientation="Horizontal">
                         <TextBlock Text="{Binding Path=Name, Mode=OneWay}"/>
                     </StackPanel>
                 </HierarchicalDataTemplate>
                 <HierarchicalDataTemplate DataType="{x:Type local:VMGroup}" ItemsSource="{Binding Children}">
-                    <StackPanel Orientation="Horizontal">
+                    <StackPanel Orientation="Horizontal" >
                         <controls:EditableTextBlock FontWeight="Bold" 
-                                                    Text="{Binding Name, Mode=TwoWay, NotifyOnSourceUpdated=true, UpdateSourceTrigger=LostFocus}"
-                                                    MouseLeftButtonDown="EditableTextBlock_MouseLeftButtonDown"
-                                                    GotFocus="EditableTextBlock_GotFocus"
-                                                     SourceUpdated="EditableTextBlock_SourceUpdated"
+                                                    Text="{Binding Name, Mode=TwoWay, NotifyOnSourceUpdated=true, UpdateSourceTrigger=Explicit}"
+                                                    SourceUpdated="EditableTextBlock_SourceUpdated"
+                                                    IsInEditMode="{Binding IsInEditMode, Mode=TwoWay}"
                                                      />
                     </StackPanel>
                 </HierarchicalDataTemplate>
             </TreeView.Resources>
+            <TreeView.ItemContainerStyle>
+                <Style TargetType="{x:Type TreeViewItem}">
+                    <Setter Property="IsSelected" Value="{Binding IsActive, Mode=TwoWay}"/>
+                    <Setter Property="IsExpanded" Value="{Binding IsExpanded, Mode=TwoWay}"/>
+                </Style>
+            </TreeView.ItemContainerStyle>
+
         </TreeView>
     </Grid>
 </UserControl>

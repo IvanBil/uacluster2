@@ -4,6 +4,16 @@
    >
     <Grid>
         <StackPanel MinWidth="120">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+                <Separator Grid.Column="0"/>
+                <TextBlock Text="VM actions" Grid.Column="1"/>
+                <Separator Grid.Column="2"/>
+            </Grid>
             <TextBlock>
                 <Hyperlink Command="{Binding VMListStart}" CommandParameter="{Binding ActiveVMList}">
                     <TextBlock Text="Start"></TextBlock>
@@ -64,7 +74,16 @@
                     <TextBlock Text="Delete Snapshot Tree"></TextBlock>
                 </Hyperlink>
             </TextBlock>
-            <Separator/>
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+                <Separator Grid.Column="0"/>
+                <TextBlock Text="VM tree actions" Grid.Column="1"/>
+                <Separator Grid.Column="2"/>
+            </Grid>
             <TextBlock>
                 <Hyperlink Command="{Binding MoveToVMGroup}" CommandParameter="{Binding ActiveVMGroup}">
                     <TextBlock Text="Move to group..."></TextBlock>

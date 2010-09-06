@@ -13,11 +13,11 @@ using System.Management;
 
 namespace VMClusterManager
 {
-    public class VMModel : IVMModel
+    public class VMModel
     {
 
 
-        Dispatcher UIDispatcher;
+        public Dispatcher UIDispatcher;
         #region IVMModel Members
         private VM activeVM;
 
@@ -120,8 +120,8 @@ namespace VMClusterManager
         }
 
 
-        private List<VMHost> activeVMHostList;
-        public List<VMHost> ActiveVMHostList
+        private ObservableCollection<VMHost> activeVMHostList;
+        public ObservableCollection<VMHost> ActiveVMHostList
         {
             get
             {
@@ -190,18 +190,80 @@ namespace VMClusterManager
             return inst;
         }
 
-        XElement VMTreeStructure = null;
+        //XElement VMTreeStructure = null;
+
+        private Settings settings;
+
+        public Settings Settings
+        {
+            get { return settings; }
+            set { settings = value; }
+        }
+
+        private static string SettingsFolderPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\" + 
+            System.Windows.Forms.Application.ProductName;
+
+        private static string VMTreeFileName = SettingsFolderPath  + "\\" + "VMTree.xml";
+        private static string VMHostTreeFileName = SettingsFolderPath + "\\" + "HostTree.xml";
+        private static string SettingsFileName = SettingsFolderPath + "\\" + "Settings.xml";
 
         private VMModel()
         {
             try
             {
                 UIDispatcher = Dispatcher.CurrentDispatcher;
+                if (!Directory.Exists(SettingsFolderPath))
+                {
+                    try
+                    {
+                        Directory.CreateDirectory(SettingsFolderPath);
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show(ex.Message, SettingsFolderPath, MessageBoxButton.OK, MessageBoxImage.Error);
+                    }
+
+                }
+                Settings.SettingsFileName = SettingsFileName;
+                try
+                {
+                    Settings = Settings.LoadFromFile();
+                }
+                catch (Exception ex)
+                {
+                    Settings = new Settings();
+                    try
+                    {
+                        Settings.SaveToFile();
+                    }
+                    catch (Exception e)
+                    {
+                        MessageBox.Show(e.Message, "Error creating settings file", MessageBoxButton.OK, MessageBoxImage.Error);
+                    }
+                }
+
                 DataReceiver DR = new DataReceiver();
-                rootVMHostGroup = new VMHostGroup("All hosts");
-                VMGroup.Storage = "VMTree.xml";
+                //rootVMHostGroup = new VMHostGroup("All hosts");
+                VMHostGroup.Storage = VMHostTreeFileName;
+                if (!File.Exists(VMHostTreeFileName))
+                {
+                    VMHostGroup temp = new VMHostGroup("All hosts");
+                    temp.SaveToXML(VMHostGroup.Storage.ToString());
+
+                }
+                try
+                {
+
+                    rootVMHostGroup = new VMHostGroup(XElement.Load(VMHostGroup.Storage.ToString()));
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message, "Error loading VMHost group structure", MessageBoxButton.OK, MessageBoxImage.Error);
+                    rootVMHostGroup = new VMHostGroup("All hosts");
+                }
+                VMGroup.Storage = VMTreeFileName;
                 //retrieve VM Tree structure
-                if (!File.Exists("VMTree.xml"))
+                if (!File.Exists(VMTreeFileName))
                 {
                     VMGroup temp = new VMGroup("All VM");
                     temp.SaveToXML(VMGroup.Storage.ToString());
@@ -209,8 +271,8 @@ namespace VMClusterManager
                 }
                 try
                     {
-                        VMTreeStructure = XElement.Load("VMTree.xml");
-                        rootVMGroup = new VMGroup(VMTreeStructure);
+
+                        rootVMGroup = new VMGroup(XElement.Load(VMGroup.Storage.ToString()));
                     }
                 catch (Exception ex)
                     {
@@ -221,19 +283,32 @@ namespace VMClusterManager
                
                 ////---------------------------
                 VMHostGroupEventSubscriber(rootVMHostGroup);
-                List<VMHost> hostList = DR.GetHostListFromFile("hostlist.txt");
-                foreach (VMHost host in hostList)
-                {
-                    rootVMHostGroup.AddHost(host);
-                }
+                //MessageBox.Show(, MessageBoxButton.OK);
                 activeVMList = new ObservableCollection<VM>();
                 ActiveVMList.CollectionChanged +=
                                        (o, e) =>
                                        {
                                            OnActiveVMListChanged(e);
                                        };
+                ActiveVMHostList = new ObservableCollection<VMHost>();
+                ActiveVMHostList.CollectionChanged +=
+                    (o, e) =>
+                    {
+                        OnActiveVMHostListChanged();
+                    };
                 activeVM = null;
                 activeVMGroup = null;
+                DR.FillVMHostTree(RootVMHostGroup.DataObject, RootVMHostGroup);
+                //List<VMHost> hostList = DR.GetHostListFromFile("hostlist.txt");
+                //foreach (VMHost host in hostList)
+                //{
+                //    rootVMHostGroup.AddHost(host);
+                //}
+                
+                
+                //dlg.Close();
+                
+                
             }
             catch (Exception ex)
             {
@@ -295,8 +370,11 @@ namespace VMClusterManager
             return connOpts;
         }
 
+        private int GetVMListCounter = 0;
+
         private void GetVMList(object param)
         {
+            Interlocked.Increment(ref GetVMListCounter);
             try
             {
 
@@ -340,7 +418,7 @@ namespace VMClusterManager
                     {
                         foreach (VM vm in vmColl)
                         {
-                            VMGroup parentForVM = DataReceiver.FindParentForVM(vm, VMTreeStructure, RootVMGroup);
+                            VMGroup parentForVM = DataReceiver.FindParentForVM(vm, RootVMGroup.DataObject, RootVMGroup);
                             if (parentForVM != null)
                             {
                                 parentForVM.AddVM(vm);
@@ -355,16 +433,34 @@ namespace VMClusterManager
                     }
 
                 }
-                lock (VMGroup.Storage)
-                {
-                    RootVMGroup.Save();
-                }
+                //lock (VMGroup.Storage)
+                //{
+                //    RootVMGroup.Save();
+                //}
             }
-            catch (UnauthorizedAccessException ex)
+            catch (Exception ex)
             {
                 MessageBox.Show(ex.Message, (param as VMHost).Name);
             }
-            
+            finally
+            {
+                Interlocked.Decrement(ref GetVMListCounter);
+            }
+            lock ((object)GetVMListCounter)
+            {
+                if (GetVMListCounter == 0)
+                {
+                    try
+                    {
+
+                        RootVMGroup.Save();
+                    }
+                    catch (IOException ex)
+                    {
+                        MessageBox.Show(ex.Message, "Saving VM group structure...", MessageBoxButton.OK, MessageBoxImage.Error);
+                    }
+                }
+            }
             
         }
 
@@ -434,9 +530,20 @@ namespace VMClusterManager
                 SelectedSnapshotItemChanged(this, new EventArgs());
         }
 
+        //public event EventHandler<EventArgs> HostListInitialized;
+        //private void OnHostListInitialized(IEnumerable<VMHost> hostlist)
+        //{
+           
+
+        //    if (HostListInitialized!= null)
+        //    {
+        //        HostListInitialized(this, new EventArgs());
+        //    }
+        //}
+
         #region API functions
 
-        public void CreateVMGroup(VMGroup parent)
+        public Group CreateGroup(Group parent)
         {
             const string DefaultGroupName = "New Group";
             string newGroupName = DefaultGroupName;
@@ -445,10 +552,10 @@ namespace VMClusterManager
             {
                 newGroupName = DefaultGroupName + " " + i.ToString();
             }
-            parent.CreateGroup(newGroupName);
+            return parent.CreateGroup(newGroupName);
         }
 
-        public void RemoveVMGroup(VMGroup group)
+        public void RemoveGroup(VMGroup group)
         {
             if (group != null)
             {
@@ -469,17 +576,37 @@ namespace VMClusterManager
             }
         }
 
+        public void RemoveGroup(VMHostGroup group)
+        {
+            if (group != null)
+            {
+                if (group.Children.Count == 0)
+                {
+                    if (MessageBox.Show("Are you shure you want to remove this group?", group.Name,
+                    MessageBoxButton.YesNo, MessageBoxImage.Warning, MessageBoxResult.No) == MessageBoxResult.Yes)
+                    {
+                        VMHostGroup parentGroup = group.ParentGroup as VMHostGroup;
+                        group.Remove();
+                        parentGroup.Save();
+                    }
+                }
+                else
+                {
+                    MessageBox.Show("Group is not empty! You can delete only empty groups.", group.Name, MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+            }
+        }
+
         private const int JobWaitTime = 100;
 
         delegate void AddLogMessageDelegate(LogMessage message);
-
 
         /// <summary>
         /// Provides an action on specific collection of VM
         /// </summary>
         /// <param name="vmList"></param>
         /// <param name="action"></param>
-        private void VMListAction(ObservableCollection<VM> vmList, Func<VM, VMJob> action)
+        private void VMListAction(ICollection<VM> vmList, Func<VM, VMJob> action)
         {
             if (vmList != null)
             {
@@ -488,42 +615,48 @@ namespace VMClusterManager
                     Dispatcher UIDispatcher = Dispatcher.CurrentDispatcher;
                     Thread vmThread = new Thread(new ParameterizedThreadStart(delegate(object param)
                     {
+                        
                         try
                         {
 
                             VMJob ThisJob = action(param as VM);
-                            while ((ThisJob.JobState == JobState.Starting) || (ThisJob.JobState == JobState.Running))
+                            if (ThisJob != null)
                             {
-                                Thread.Sleep(JobWaitTime);
-                            }
+                                while ((ThisJob.JobState == JobState.Starting) || (ThisJob.JobState == JobState.Running))
+                                {
+                                    Thread.Sleep(JobWaitTime);
+                                }
 
-                            if (ThisJob.JobState != JobState.Completed)
-                            {
-                                if (vmList.Count == 1)
+                                if (ThisJob.JobState != JobState.Completed)
                                 {
-                                    MessageBox.Show(ThisJob.GetError(), "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                                    if (vmList.Count == 1)
+                                    {
+                                        MessageBox.Show(ThisJob.GetError(), "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                                    }
+                                    else
+                                    {
+                                        //this is done to allow this thread to change collection which is monitored by user interface main thread
+                                        //otherwise an error occures
+                                        UIDispatcher.Invoke(new AddLogMessageDelegate(
+                                            delegate(LogMessage message)
+                                            {
+                                                VMLog.GetInstance().Add(message);
+                                            }
+                                            ), new LogMessage(LogMessageTypes.Error, ThisJob.GetError(), (param as VM).Name, ThisJob.Caption));
+                                    }
                                 }
-                                else
-                                {
-                                    //this is done to allow this thread to change collection which is monitored by user interface main thread
-                                    //otherwise an error occures
-                                    UIDispatcher.Invoke(new AddLogMessageDelegate(
-                                        delegate(LogMessage message)
-                                        {
-                                            VMLog.GetInstance().Add(message);
-                                        }
-                                        ), new LogMessage(LogMessageTypes.Error, ThisJob.GetError(), param as VM, ThisJob));
-                                }
+                                
                             }
                         }
-                        catch (InvalidOperationException ex)
+                        catch (VMOperationException ex)
                         {
+                           
                             UIDispatcher.Invoke(new AddLogMessageDelegate(
                                         delegate(LogMessage message)
                                         {
                                             VMLog.GetInstance().Add(message);
                                         }
-                                        ), new LogMessage(LogMessageTypes.Warning, ex.Message, param as VM, "StateChange"));
+                                        ), new LogMessage(LogMessageTypes.Error, ex.Message, (param as VM).Name, action.Method.Name));
                         }
                     }));
                     vmThread.IsBackground = true;
@@ -596,7 +729,7 @@ namespace VMClusterManager
                                         {
                                             VMLog.GetInstance().Add(message);
                                         }
-                                        ), new LogMessage(LogMessageTypes.Error, "Failed to shutdown selected VM. Error code: " + returnValue.ToString(), param as VM, "Shutdown"));
+                                        ), new LogMessage(LogMessageTypes.Error, "Failed to shutdown selected VM. Error code: " + returnValue.ToString(), (param as VM).Name, "Shutdown"));
                                 }
                             }
                         }
@@ -607,13 +740,31 @@ namespace VMClusterManager
                                         {
                                             VMLog.GetInstance().Add(message);
                                         }
-                                        ), new LogMessage(LogMessageTypes.Warning, ex.Message, param as VM, "Shutdown"));
+                                        ), new LogMessage(LogMessageTypes.Warning, ex.Message, (param as VM).Name, "Shutdown"));
                         }
                     }));
                     vmThread.IsBackground = true;
                     vmThread.Start(vm);
                 }
             }
+        }
+
+        public void SetMemoryVMList(ICollection<VM> vmList, UInt64 quantity)
+        {
+            VMListAction(vmList,
+                delegate(VM vm)
+                {
+                    return Utility.SetMemory(vm, quantity);
+                });
+        }
+
+        public void SetProcessorVMList(ICollection<VM> vmList, UInt64 quantity)
+        {
+            VMListAction(vmList,
+               delegate(VM vm)
+               {
+                   return Utility.SetProcessor(vm, quantity);
+               });
         }
 
         public bool CanShutdownVMList(ObservableCollection<VM> vmList)
@@ -803,43 +954,73 @@ namespace VMClusterManager
 
 
 
-        public void MoveToGroup(object item, VMGroup group)
+        public void MoveToGroup(VM item, VMGroup newParent)
         {
             lock (item)
             {
-                if (item is VMGroup)
+                VMGroup parentGroup = VMGroup.FindParentFor(item, this.RootVMGroup);
+                if (parentGroup != newParent)
                 {
-                    (item as VMGroup).MoveTo(group);
-                }
-                if (item is VM)
-                {
-                    VM vm = item as VM;
-                    VMGroup parentGroup = VMGroup.FindParentFor(vm, this.RootVMGroup);
-                    if (parentGroup != group)
+                    lock (newParent)
                     {
-                        lock (group)
-                        {
-                            group.AddVM(vm);
-                        }
-                        lock (parentGroup)
-                        {
-                            parentGroup.RemoveVM(vm);
-                        }
+                        newParent.AddVM(item);
+                    }
+                    lock (parentGroup)
+                    {
+                        parentGroup.RemoveVM(item);
                     }
                 }
             }
         }
 
+        public void MoveToGroup(VMHost item, VMHostGroup newParent)
+        {
+            lock (item)
+            {
+                VMHostGroup parentGroup = VMHostGroup.FindParentFor(item, this.RootVMHostGroup);
+                if (parentGroup != newParent)
+                {
+                    lock (newParent)
+                    {
+                        newParent.AddHost(item);
+                    }
+                    lock (parentGroup)
+                    {
+                        parentGroup.RemoveHost(item);
+                    }
+                }
+            }
+        }
+
+        public void MoveToGroup(Group item, Group newParent)
+        {
+            lock (item)
+            {
+                item.MoveTo(newParent);
+            }
+        }
+
+
         public void MoveToGroup(ObservableCollection<VM> vmList, VMGroup group)
         {
-            lock (vmList)
-            {
+            
                 ObservableCollection<VM> VMToMove = new ObservableCollection<VM>(vmList);
                 foreach (VM vm in VMToMove)
                 {
                     MoveToGroup(vm, group);
                 }
+            
+        }
+
+        public void MoveToGroup(ObservableCollection<VMHost> vmHostList, VMHostGroup group)
+        {
+
+            ObservableCollection<VMHost> VMHostToMove = new ObservableCollection<VMHost>(vmHostList);
+            foreach (VMHost vmHost in VMHostToMove)
+            {
+                MoveToGroup(vmHost, group);
             }
+
         }
 
         public bool CanMoveToGroup(object item)
@@ -854,13 +1035,18 @@ namespace VMClusterManager
                         canMove = true;
                     }
                                     }
-                if (item is VM)
+                //if (item is VM)
+                //{
+                //    canMove = true;
+                //}
+                if (item is VMHostGroup)
                 {
                     canMove = true;
                 }
             }
             return canMove;
         }
+
 
         public bool CanMoveToGroup(ObservableCollection<VM> vmList)
         {
@@ -875,8 +1061,49 @@ namespace VMClusterManager
             return canMove;
         }
 
+        public bool CanMoveToGroup(ObservableCollection<VMHost> vmHostList)
+        {
+            bool canMove = false;
+            if (vmHostList != null)
+            {
+                if (vmHostList.Count > 0)
+                {
+                    canMove = true;
+                }
+            }
+            return canMove;
+        }
+
+        public void RemoveHost(VMHost host)
+        {
+            //Remove host's VM from its parent groups
+            if (MessageBox.Show("Warning! If you remove this host you won't be able to control Virtual Machines hosted on it." + Environment.NewLine + "Are you shure you want to remove this Host?", host.Name,
+                    MessageBoxButton.YesNo, MessageBoxImage.Warning, MessageBoxResult.No) == MessageBoxResult.Yes)
+            {
+                foreach (VM vm in host.VMCollection)
+                {
+                    VMGroup vmParent = VMGroup.FindParentFor(vm, RootVMGroup);
+                    vmParent.RemoveVM(vm);
+                    vmParent.Save();
+                }
+
+                VMHostGroup hostParent = VMHostGroup.FindParentFor(host, RootVMHostGroup);
+                hostParent.RemoveHost(host);
+                hostParent.Save();
+            }
+        }
+
         #endregion //API functions
 
+        public static string GetItemName<T>(T item) where T : class
+        {
+            var properties = typeof(T).GetProperties();
+            //Enforce.That(properties.Length == 1);
+            return properties[1].Name;
+        }
+
     }
+
+    
 
 }

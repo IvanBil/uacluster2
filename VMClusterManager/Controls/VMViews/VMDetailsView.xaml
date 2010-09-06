@@ -4,7 +4,7 @@
     >
     <DockPanel>
         <!--Snapshots tree container-->
-        <Expander DockPanel.Dock="Bottom" BorderBrush="Black" BorderThickness="1">
+        <Expander DockPanel.Dock="Bottom" Header="Snapshots" BorderBrush="Black" BorderThickness="1">
             <HeaderedContentControl Header="Snapshots">
                 <!--Snapshots Tree-->
                 <TreeView ItemsSource="{Binding VMSnapshots}">
@@ -30,13 +30,13 @@
                 </TreeView>
             </HeaderedContentControl>
         </Expander>
-        <Border BorderBrush="Blue" BorderThickness="1"></Border>
+       
         <Grid DockPanel.Dock="Top">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="112*" />
                 <ColumnDefinition Width="186*" />
             </Grid.ColumnDefinitions>
-            <StackPanel Grid.Column="1" Margin="10">
+            <!--<StackPanel Grid.Column="1" Margin="10">
                 <TextBlock>
                     <TextBlock.Text>
                         <Binding Path="VMName" />
@@ -47,7 +47,36 @@
                         <Binding Path="VMStatusString" Mode="OneWay" />
                     </TextBlock.Text>
                 </TextBlock>
-            </StackPanel>
+            </StackPanel>-->
+            <Grid Grid.Column="1" Margin="10">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+                <TextBlock Text="Name" Grid.Column="0" Grid.Row="0" HorizontalAlignment="Left" Margin="5"/>
+                <TextBlock Text="{Binding VMName}" Grid.Row="0" Grid.Column="1" HorizontalAlignment="Left" Margin="5"/>
+                <TextBlock Text="Computer name" Grid.Column="0" Grid.Row="1" HorizontalAlignment="Left" Margin="5"/>
+                <TextBlock Text="{Binding VMDomainName}" Grid.Row="1" Grid.Column="1" HorizontalAlignment="Left" Margin="5"/>
+                <TextBlock Text="Status" Grid.Column="0" Grid.Row="2" HorizontalAlignment="Left" Margin="5"/>
+                <TextBlock Text="{Binding VMStatusString}" Grid.Row="2" Grid.Column="1" HorizontalAlignment="Left" Margin="5"/>
+                <TextBlock Text="OS name" Grid.Column="0" Grid.Row="3" HorizontalAlignment="Left" Margin="5"/>
+                <TextBlock Text="{Binding OSName}" Grid.Row="3" Grid.Column="1" HorizontalAlignment="Left" Margin="5"/>
+                <TextBlock Text="OS version" Grid.Column="0" Grid.Row="4" HorizontalAlignment="Left" Margin="5"/>
+                <TextBlock Text="{Binding OSVersion}" Grid.Row="4" Grid.Column="1" HorizontalAlignment="Left" Margin="5"/>
+                <TextBlock Text="CSD Version" Grid.Column="0" Grid.Row="5" HorizontalAlignment="Left" Margin="5"/>
+                <TextBlock Text="{Binding CSDVersion}" Grid.Row="5" Grid.Column="1" HorizontalAlignment="Left" Margin="5"/>
+                <TextBlock Text="IP Address" Grid.Column="0" Grid.Row="6" HorizontalAlignment="Left" Margin="5"/>
+                <TextBlock Text="{Binding IPv4Address}" Grid.Row="6" Grid.Column="1" HorizontalAlignment="Left" Margin="5"/>
+            </Grid>
 
             <Image Grid.Column="0" Name="ThumbnailImage"  VerticalAlignment="Top" Source="{Binding ThumbnailImage}" Margin="10">
             </Image>

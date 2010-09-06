@@ -10,12 +10,12 @@
                 </Hyperlink>
             </TextBlock>
             <TextBlock>
-                <Hyperlink Command="{Binding VMGroupCreate}" CommandParameter="{Binding ActiveVMGroup}">
+                <Hyperlink Command="{Binding VMGroupCreate}" CommandParameter="{Binding SelectedItem}">
                     <TextBlock Text="Create new group"></TextBlock>
                 </Hyperlink>
             </TextBlock>
             <TextBlock>
-                <Hyperlink Command="{Binding VMGroupRemove}" CommandParameter="{Binding ActiveVMGroup}">
+                <Hyperlink Command="{Binding VMGroupRemove}" CommandParameter="{Binding SelectedItem}">
                     <TextBlock Text="Remove Group"></TextBlock>
                 </Hyperlink>
             </TextBlock>

@@ -34,6 +34,7 @@
     <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <BootstrapperEnabled>true</BootstrapperEnabled>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -78,20 +79,10 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Microsoft.Hpc.Scheduler, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>C:\Program Files\Microsoft HPC Pack 2008 SDK\Bin\Microsoft.Hpc.Scheduler.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.Hpc.Scheduler.Internal, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>C:\Program Files\Microsoft HPC Pack 2008 SDK\Bin\Microsoft.Hpc.Scheduler.Internal.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="Microsoft.Hpc.Scheduler.Properties, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>C:\Program Files\Microsoft HPC Pack 2008 SDK\Bin\Microsoft.Hpc.Scheduler.Properties.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.Hpc.Scheduler.Store, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>C:\Program Files\Microsoft HPC Pack 2008 SDK\Bin\Microsoft.Hpc.Scheduler.Store.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Configuration.Install" />
@@ -130,11 +121,19 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Page Include="Controls\Dialogs\AddHostDialog.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Controls\Dialogs\AuthenticationDialog.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Controls\Dialogs\HostListInitializeDialog.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Controls\Dialogs\MoveToGroupDialog.xaml">
       <SubType>Designer</SubType>
@@ -160,11 +159,31 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Page Include="Controls\NavigationControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Controls\ResourceViews\MemoryView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Controls\ResourceViews\ProcessorView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Controls\TreeCommandsView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Controls\VMHostViews\VMHostListView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Controls\VMHostViews\VMHostTreeActionsView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Controls\VMHostViews\VMHostTreeView.xaml">
       <SubType>Designer</SubType>
@@ -172,13 +191,11 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Controls\VMViews\VMTreeView.xaml">
+    <Page Include="Controls\VMViews\VMPropertiesView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
     </Page>
-    <Page Include="Controls\DetailViewBase.xaml">
+    <Page Include="Controls\VMViews\VMTreeView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
       <Generator>MSBuild:Compile</Generator>
@@ -224,6 +241,47 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="CommandBase\CommandReference.cs" />
+    <Compile Include="Controls\Dialogs\AddHostDialog.xaml.cs">
+      <DependentUpon>AddHostDialog.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\Dialogs\HostListInitializeDialog.xaml.cs">
+      <DependentUpon>HostListInitializeDialog.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\NavigationControl.xaml.cs">
+      <DependentUpon>NavigationControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\ResourceViews\MemoryView.xaml.cs">
+      <DependentUpon>MemoryView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\ResourceViews\ProcessorView.xaml.cs">
+      <DependentUpon>ProcessorView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\VMHostViews\VMHostListView.xaml.cs">
+      <DependentUpon>VMHostListView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\VMHostViews\VMHostTreeActionsView.xaml.cs">
+      <DependentUpon>VMHostTreeActionsView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\VMViews\VMPropertiesView.xaml.cs">
+      <DependentUpon>VMPropertiesView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Converters\JobToTaskListConverter.cs" />
+    <Compile Include="Converters\ModelToViewModelConverter.cs" />
+    <Compile Include="Converters\StringToIpAddressConverter.cs" />
+    <Compile Include="Settings.cs" />
+    <Compile Include="Validation\StringToIPAddressValidation.cs" />
+    <Compile Include="View Models\DialogModels\AddHostDialogViewModel.cs" />
+    <Compile Include="View Models\MainWindowViewModel.cs" />
+    <Compile Include="View Models\NavigationViewModel.cs" />
+    <Compile Include="View Models\ResourceViewModels\MemoryViewModel.cs" />
+    <Compile Include="View Models\ResourceViewModels\ProcessorViewModel.cs" />
+    <Compile Include="View Models\ResourceViewModels\ResourceViewModel.cs" />
+    <Compile Include="View Models\VMHostModels\VMHostListViewModel.cs" />
+    <Compile Include="View Models\VMHostModels\VMHostViewModel.cs" />
+    <Compile Include="View Models\VMModels\GroupViewModel.cs" />
+    <Compile Include="View Models\VMModels\VMGroupViewModel.cs" />
+    <Compile Include="View Models\VMModels\VMPropertiesViewModel.cs" />
     <Compile Include="Window1.xaml.cs">
       <DependentUpon>Window1.xaml</DependentUpon>
       <SubType>Code</SubType>
@@ -260,16 +318,12 @@
     <Compile Include="Controls\VMViews\VMTreeView.xaml.cs">
       <DependentUpon>VMTreeView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Controls\DetailViewBase.xaml.cs">
-      <DependentUpon>DetailViewBase.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Controls\VMViews\VMCommandsView.xaml.cs">
       <DependentUpon>VMCommandsView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Controls\VMViews\VMListView.xaml.cs">
       <DependentUpon>VMListView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Converter.cs" />
     <Compile Include="Data\DataReceiver.cs" />
     <Compile Include="Data\IDataProvider.cs">
       <SubType>Code</SubType>
@@ -277,7 +331,7 @@
     <Compile Include="Data\XMLDataProvider.cs" />
     <Compile Include="Exceptions.cs" />
     <Compile Include="Group.cs" />
-    <Compile Include="HostGroup.cs" />
+    <Compile Include="VMHostGroup.cs" />
     <Compile Include="Job.cs" />
     <Compile Include="ShortcutsInstaller.cs">
       <SubType>Component</SubType>
@@ -334,6 +388,7 @@
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
       <SubType>Designer</SubType>
     </EmbeddedResource>
+    <None Include="app.config" />
     <None Include="app.manifest" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
@@ -396,6 +451,7 @@
       <Lcid>0</Lcid>
       <WrapperTool>tlbimp</WrapperTool>
       <Isolated>False</Isolated>
+      <Private>False</Private>
     </COMReference>
   </ItemGroup>
   <ItemGroup>

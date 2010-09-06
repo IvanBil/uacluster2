@@ -243,23 +243,31 @@ namespace VMClusterManager.ViewModels.VMModels
         private Thread CommandRefreshThread = null;
         private void RefreshCommands()
         {
-            if (CommandRefreshThread != null)
+            try
             {
-                if (CommandRefreshThread.ThreadState == ThreadState.Running)
+                if (CommandRefreshThread != null)
                 {
-                    return;
+                    if (CommandRefreshThread.ThreadState == ThreadState.Running)
+                    {
+                        return;
+                    }
                 }
+                CommandRefreshThread = new Thread(new ThreadStart(delegate()
+                {
+                    foreach (Action action in CanExecuteRaisers)
+                    {
+                        action();
+                    }
+                }));
+                CommandRefreshThread.IsBackground = true;
+                CommandRefreshThread.Start();
             }
-            CommandRefreshThread = new Thread(new ThreadStart(delegate()
+            catch (Exception ex)
             {
-                foreach (Action action in CanExecuteRaisers)
-                {
-                    action();
-                }
-            }));
-            CommandRefreshThread.IsBackground = true;
-            CommandRefreshThread.Start();
-            
+#if DEBUG
+                MessageBox.Show(ex.Message, "VMCommandsViewModel.RefreshCommands()", MessageBoxButton.OK, MessageBoxImage.Error);
+#endif
+            }
         }
 
 
@@ -348,8 +356,18 @@ namespace VMClusterManager.ViewModels.VMModels
                     {
                         Thread vmThread = new Thread(new ParameterizedThreadStart(delegate(object param)
                             {
-                                (param as VM).ConnectTo();
-                                RefreshCommands();
+                                try
+                                {
+                                    (param as VM).ConnectTo();
+                                    //RefreshCommands();
+                                }
+                                catch (Exception ex)
+                                {
+                                    MessageBox.Show("While attempting to execute vmconnect.exe following error occured:" + Environment.NewLine + 
+                                        ex.Message + "." + Environment.NewLine + 
+                                        "Probable reason: Microsoft Hyper-V Role is not installed"
+                                        , "Virtual Machine Connection", MessageBoxButton.OK, MessageBoxImage.Error);
+                                }
                             }));
                         vmThread.Start(vm);
                     }
@@ -447,13 +465,15 @@ namespace VMClusterManager.ViewModels.VMModels
                 VMGroup group = dlg.CheckedItem as VMGroup;
                 if ((item is VMGroup)&&(ActiveVMList.Count == 0))
                 {
-                    model.MoveToGroup(item, group);
+                    model.MoveToGroup(item as VMGroup, group);
                     group.Save();
                     
                 }
                 else
                 {//Some VM in Group selected or single VM is selected on tree
+                    
                     model.MoveToGroup(ActiveVMList, group);
+                    model.ActiveVMList.Clear();
                     group.Save();
                     
                 }

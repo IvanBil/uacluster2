@@ -76,6 +76,12 @@ namespace VMClusterManager.Controls
                 {
                     if (value) oldText = Text;
                     SetValue(IsInEditModeProperty, value);
+                    try
+                    {
+                        BindingExpression bindexp = this.GetBindingExpression(EditableTextBlock.TextProperty);
+                        bindexp.UpdateSource();
+                    }
+                    catch (Exception) { }
                 }
             }
         }

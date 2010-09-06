@@ -17,24 +17,27 @@ using VMClusterManager.ViewModels.VMModels;
 using VMClusterManager.Controls.JobViews;
 using System.Diagnostics;
 using VMClusterManager.Windows;
+using VMClusterManager.ViewModels;
 
 namespace VMClusterManager
 {
     /// <summary>
     /// Interaction logic for Window1.xaml
     /// </summary>
-    public partial class Window1 : Window
+    public partial class Window1 : Window, IView
     {
         public Window1()
         {
             InitializeComponent();
-            this.Title = System.Windows.Forms.Application.ProductName + " v" + System.Windows.Forms.Application.ProductVersion;
+            this.Title = System.Windows.Forms.Application.ProductName + " v" + System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.ToString();
+            this.DataContext = new MainWindowViewModel();
+           
         }
 
 
         private void wMain_Loaded(object sender, RoutedEventArgs e)
         {
-            btnHosts_Click(this, new RoutedEventArgs());
+            //btnHosts_Click(this, new RoutedEventArgs());
             //VMTreeViewModel treepm = new VMTreeViewModel(VMModel.GetInstance());
         }
 
@@ -60,45 +63,46 @@ namespace VMClusterManager
         {
             //foreach (VM vm in lstBox.Items)
             //    vm.Close();
+           
         }
 
         private void btnVM_Click(object sender, RoutedEventArgs e)
         {
-            VMTreeViewModel treepm = new VMTreeViewModel(VMModel.GetInstance());
+            //VMTreeViewModel treepm = new VMTreeViewModel(VMModel.GetInstance());
 
-            //Binding bind = new Binding("SelectedItem");
-            //Binding bind = new Binding();
-            //bind.Source = treepm.View.treeElements;
-            TreeCommands.Content = treepm.GroupCommandsView;
-            DetailViewBase vb = new DetailViewBase();
-            //vb.SetBinding(DetailViewBase.DataContextProperty, bind);
+            ////Binding bind = new Binding("SelectedItem");
+            ////Binding bind = new Binding();
+            ////bind.Source = treepm.View.treeElements;
+            //TreeCommands.Content = treepm.GroupCommandsView;
+            //DetailViewBase vb = new DetailViewBase();
+            ////vb.SetBinding(DetailViewBase.DataContextProperty, bind);
 
-            navigationTree.Content = treepm.View;
-            detailsPlaceholder.Children.Clear();
-            detailsPlaceholder.Children.Add(vb);
-            VMCommandsViewModel vmCommandsViewModel = new VMCommandsViewModel(VMModel.GetInstance());
-            actionMenu.Content = vmCommandsViewModel.View;
-            
+            //navigationTree.Content = treepm.View;
+            //detailsPlaceholder.Children.Clear();
+            //detailsPlaceholder.Children.Add(vb);
+            //VMCommandsViewModel vmCommandsViewModel = new VMCommandsViewModel(VMModel.GetInstance());
+            //actionMenu.Content = vmCommandsViewModel.View;
+
         }
 
         private void btnHosts_Click(object sender, RoutedEventArgs e)
         {
-            VMHostTreeViewModel treevm = new VMHostTreeViewModel(VMModel.GetInstance());
-            navigationTree.Content = treevm.View;
+            //VMHostTreeViewModel treevm = new VMHostTreeViewModel(VMModel.GetInstance());
+            //navigationTree.Content = treevm.View;
             //TreeCommandsView treeCommands
         }
 
         private void btnTasks_Click(object sender, RoutedEventArgs e)
         {
-            VMTreeViewModel treepm = new VMTreeViewModel(VMModel.GetInstance());
-            navigationTree.Content = treepm.View;
-            JobListViewModel JbLstvm = new JobListViewModel("localhost");
-            DetailViewBase vb = new DetailViewBase(JbLstvm);
-            detailsPlaceholder.Children.Clear();
-            detailsPlaceholder.Children.Add(vb);
-            JobCommandsView commView = new JobCommandsView();
-            commView.SetViewModel(JbLstvm);
-            actionMenu.Content = commView;
+            //VMTreeViewModel treepm = new VMTreeViewModel(VMModel.GetInstance());
+            //navigationTree.Content = treepm.View;
+            //JobListViewModel JbLstvm = new JobListViewModel("localhost");
+            //DetailViewBase vb = new DetailViewBase(JbLstvm);
+            //detailsPlaceholder.Children.Clear();
+            //detailsPlaceholder.Children.Add(vb);
+            //JobCommandsView commView = new JobCommandsView();
+            //commView.SetViewModel(JbLstvm);
+            //actionMenu.Content = commView;
             //JobListViewModel jvm = new JobListViewModel("hnode");
             //detailsPlaceholder.Children.Clear();
             //detailsPlaceholder.Children.Add(jvm.View as UIElement);
@@ -130,6 +134,11 @@ namespace VMClusterManager
             AboutWindow wndAbout = new AboutWindow();
             wndAbout.Owner = this;
             wndAbout.ShowDialog();
+        }
+
+        public void SetViewModel(object ViewModel)
+        {
+            this.DataContext = ViewModel;
         }
     }
 }
