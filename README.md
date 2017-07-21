@@ -24,4 +24,4 @@ The aim of the project is providing users with essential documentation and tools
    - VMClusterManager utility user guide
    - Deployment guide for the Web site
 
-See [UACluster2 overview](docs/UACluster2%20overview.docx) for more details.
+See [UACluster2 overview](docs/UACluster2%20overview.docx?raw=true) for more details.
