@@ -1,4 +1,4 @@
-# uacluster2
+# UACluster2
 ## Project Description
 UACluster2 is set of manuals and tools to create and manage high performance computing cluster based on Microsoft Hyper-V virtual machines. It needs Microsoft HPC Server 2008 (Microsoft HPC Server 2008 R2) as a basis of cluster creation. 
 
